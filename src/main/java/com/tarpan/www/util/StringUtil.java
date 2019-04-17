@@ -303,4 +303,31 @@ public class StringUtil {
 		}
 		return result;	    
 	}
+	
+	/**
+	 * 将数组按sp分隔组成字符串
+	 * 
+	 * @param arr
+	 * @param sp
+	 * @return
+	 */
+	public static String arrayToString(String[] arr, String sp) {
+		StringBuilder result = new StringBuilder();
+		if (arr.length < 1) {
+			return "";
+		}
+		for (int i = 0; i < arr.length; i++) {
+			result.append(arr[i]);
+			if (i < arr.length - 1) {
+				result.append(sp);
+			}
+		}
+
+		return result.toString();
+	}
+	
+	public static void main(String args[]){
+		String[] str = {"a","b","c","efefe"};
+		System.out.println(arrayToString(str, "===="));
+	}
 }
