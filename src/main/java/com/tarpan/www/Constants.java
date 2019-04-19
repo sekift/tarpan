@@ -1,7 +1,5 @@
 package com.tarpan.www;
 
-import java.io.File;
-
 /**
  * 常量值
  * @author sekift
@@ -9,7 +7,7 @@ import java.io.File;
  */
 public class Constants {
 
-	public static final String PRE = File.separatorChar + "data" + File.separatorChar;
+	public static final String PRE = "/data/";
 	public static final String PRO = ".txt";
 	
 	public static final String IV_FILE = PRE + "iv" + PRO;
@@ -18,6 +16,7 @@ public class Constants {
 	public static final String STOPWORD_FILE = PRE + "stopword" + PRO;
 	public static final String NEG_FILE = PRE + "neg" + PRO;
 	public static final String POS_FILE = PRE + "pos" + PRO;
+	public static final String OOV_FILE = PRE + "oov" + PRO;
 
 	// 分割符号
 	public static final String EQUAL_SEP = "====";

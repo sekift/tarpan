@@ -63,55 +63,11 @@ public class PreProcess {
 	}
 	
 	/**
-	 * 文件转set
-	 * @param path
-	 * @return
-	 */
-	public static Set<String> file2Set(String path) {
-		Set<String> set = new HashSet<String>();
-		try{
-			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
-			while(lines.hasNext()){
-				String line = lines.next().trim();
-				if(!StringUtil.isNullOrBlank(line)){
-					set.add(line);
-				}
-			}
-		}catch(Exception e){
-			logger.error("[情感分析]文件转set出错，", e);
-			e.printStackTrace();
-		}
-		return set;
-	}
-	
-	/**
-	 * 文件转list
-	 * @param path
-	 * @return
-	 */
-	public static List<String> file2List(String path) {
-		List<String> list = new ArrayList<String>();
-		try{
-			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
-			while(lines.hasNext()){
-				String line = lines.next().trim();
-				if(!StringUtil.isNullOrBlank(line)){
-					list.add(line);
-				}
-			}
-		}catch(Exception e){
-			logger.error("[情感分析]文件转set出错，", e);
-			e.printStackTrace();
-		}
-		return list;
-	}
-	
-	/**
 	 * 预处理
 	 * @param path
 	 */
 	public static void preProcess(String inPath, String outPath){
-		List<String> emojiList = file2List(FileUtil.getDataPath(Constants.EMOJI_FILE));
+		List<String> emojiList = FileUtil.file2List(FileUtil.getDataPath(Constants.EMOJI_FILE));
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(inPath), Charsets.UTF_8.toString());
 			while(lines.hasNext()){
@@ -138,7 +94,7 @@ public class PreProcess {
 	 */
 	public static Map<String, Integer> sentiment(){
 		Map<String, Integer> map = new HashMap<String, Integer>();
-		Set<String> stopwordSet = file2Set(FileUtil.getDataPath(
+		Set<String> stopwordSet = FileUtil.file2Set(FileUtil.getDataPath(
 				Constants.STOPWORD_FILE));
 		try{
 			LineIterator negLines = FileUtils.lineIterator(FileUtil.getDataFile(
@@ -148,7 +104,7 @@ public class PreProcess {
 			while(negLines.hasNext()){
 				String lines = negLines.next().trim();
 				if(!StringUtil.isNullOrBlank(lines)){
-					map.put(lines, 1);
+					map.put(lines, -1);
 				}
 			}
 			
@@ -498,7 +454,7 @@ public class PreProcess {
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(taggedFile), Charsets.UTF_8.toString());
 			while(lines.hasNext()){
-				List<String> phraseList = new ArrayList<String>();
+				//List<String> phraseList = new ArrayList<String>();
 				String line = lines.next().trim();
 				if(!StringUtil.isNullOrBlank(line)){ //a line from taggedFILE
 					//if line =='----------#NN':  ## NN
@@ -553,7 +509,10 @@ public class PreProcess {
 				}else if(len == 4){
 					if(li[1].startsWith("VE")){//VE:有/没有
 						if("没有".equals(li[0]) || "没".equals(li[0])){
-							List<String> list = Arrays.asList(li);
+							List<String> list = new ArrayList<String>();
+							for(String s : li){
+								list.add(s);
+							}
 					        list.remove(1);
 					        li =  list.toArray(new String[1]);
 					        finalPH.add(RegexUtil.eregReplace("\\w{1,3}",
@@ -615,5 +574,6 @@ public class PreProcess {
 	}
 	
 	public static void main(String args[]){
+		
 	}
 }

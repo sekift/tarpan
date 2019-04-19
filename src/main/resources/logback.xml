@@ -12,13 +12,13 @@
 		<!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
 		<!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy -->
 		<!--for further documentation -->
-		<file>/www/applog/com.sentilearn.www/app.log</file>
+		<file>/www/applog/com.tarpan.www/app.log</file>
 		<encoder>
 			<pattern>%date %thread \(%logger{0}:%line\) %level - %msg%n</pattern>
 			<charset>UTF-8</charset>
 		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>/www/applog/com.sentilearn.www/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>/www/applog/com.tarpan.www/app.%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>
 	</appender>
@@ -27,5 +27,5 @@
 		<appender-ref ref="stdout" />
 		<appender-ref ref="fileout" />
 	</root>
-	<logger name="com.sentilearn.www" level="debug" />
+	<logger name="com.tarpan.www" level="debug" />
 </configuration>
