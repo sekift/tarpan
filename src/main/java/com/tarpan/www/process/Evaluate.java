@@ -1,7 +1,6 @@
 package com.tarpan.www.process;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,9 +63,9 @@ public class Evaluate {
 				double begin = 0.0, end = 0.0;
 				try {
 					begin = Double.parseDouble(li[0]);
-					end = Double.parseDouble(li[-1]);
+					end = Double.parseDouble(li[li.length-1]);
 				} catch (Exception e) {
-					logger.info("li[0]=" + li[0] + "li[-1]=" + li[-1]);
+					logger.info("li[0]=" + li[0] + "li[li.length-1]=" + li[li.length-1]);
 				}
 
 				if (Math.abs(begin) > Math.abs(end)) {

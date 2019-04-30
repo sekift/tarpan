@@ -218,7 +218,7 @@ public class Check {
 		}
 	}
 	
-	public static Map<String, String> loadAspectsenti(String inPath, String outPath){
+	public static Map<String, String> loadAspectsenti(String inPath){
     	Map<String, String> dic = new HashMap<String, String>();
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(inPath), Charsets.UTF_8.toString());

@@ -3,17 +3,13 @@ package com.tarpan.www.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * according features(noun phrase) to find the corresponding opinion
  * @author sekift
  *
  */
 public class NPfindOP {
-    private static Logger logger = LoggerFactory.getLogger(Check.class);
-    
+	
     //extract two key words from a dependency
     public static List<String> extractDep(String dep, int order){
     	String[] li1 = dep.split("(");

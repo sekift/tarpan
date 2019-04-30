@@ -198,10 +198,22 @@ public class PreProcess {
 		return null;
 	}
 	
-	
+	/**
+	 * 寻找短语
+	 * @param dict
+	 * @param nnSet
+	 * @param vvSet
+	 * @param adSet
+	 * @param sumList
+	 * @param aspect
+	 * @param am
+	 * @param line
+	 * @param y
+	 * @return
+	 */
 	public static List<String> findPhrase(Map<String, Integer> dict, Set<String> nnSet,
 			Set<String> vvSet, Set<String> adSet, List<String> sumList, 
-			Map<String, Integer> aspect, List<String> am,
+			Map<String, String> aspect, List<String> am,
 			String line, String y){
 		List<String> phraseList = new ArrayList<String>();
 		List<String> phraseList2 = new ArrayList<String>();
@@ -214,6 +226,7 @@ public class PreProcess {
 			String[] yList = y.split("   ");
 			int lb = 0; //lowerbound, record the wrote position
 			for(int i=0; i<list.length;i++){
+				//System.out.println(i+" : "+list[i]+" : "+yList[i]);
 				String seger = getWord(list[i]);
 				String label = getLabel(list[i]);
 				
@@ -406,6 +419,7 @@ public class PreProcess {
 						lb=i;
 					}
 				}else{
+					//System.out.println(seger);
 					if("VV".equals(label)){
 						//TODO
 						try{
@@ -429,7 +443,7 @@ public class PreProcess {
 					}
 				}
 			}
-			
+
 			for(String p : phraseList){
 				String p1 = RegexUtil.eregReplace("#\\w{1,3}",p,"");
 				if(farSenti.contains(p1)){
@@ -445,7 +459,6 @@ public class PreProcess {
 				}
 			}
 		}
-		
 		return phraseList2;
 	}
 	
@@ -573,7 +586,4 @@ public class PreProcess {
 		return finalPH;
 	}
 	
-	public static void main(String args[]){
-		
-	}
 }

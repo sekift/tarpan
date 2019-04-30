@@ -114,4 +114,25 @@ public class FileUtil {
 		}
 		return map;
     }
+    
+    /**
+     * 文件转map，行为key，值为1
+     * @param path
+     * @return
+     */
+    public static Map<String, String> file2DicStr(String path){
+		Map<String, String> map = new HashMap<String, String>();
+		try{
+			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
+			while(lines.hasNext()){
+				String line = lines.next().trim();
+				if(!StringUtil.isNullOrBlank(line)){
+					map.put(line.split(" ")[0]+line.split(" ")[0], line.split(" ")[2]);
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return map;
+    }
 }

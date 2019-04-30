@@ -17,6 +17,16 @@ public class Constants {
 	public static final String NEG_FILE = PRE + "neg" + PRO;
 	public static final String POS_FILE = PRE + "pos" + PRO;
 	public static final String OOV_FILE = PRE + "oov" + PRO;
+	public static final String ADV_FILE = PRE + "advxxx" + PRO;
+	public static final String SENTI_FILE = PRE + "sentiment2" + PRO;
+	public static final String NONLI_FILE = PRE + "nonlinear" + PRO;
+	public static final String SENTINN_FILE = PRE + "sentiNN" + PRO;
+	public static final String SENTIVV_FILE = PRE + "sentiVV" + PRO;
+	public static final String SENTIAD_FILE = PRE + "sentiAD" + PRO;
+	public static final String SUMMARY_FILE = PRE + "summary" + PRO;
+	public static final String ASPECT_FILE = PRE + "aspectDICT" + PRO;
+	public static final String AM_FILE = PRE + "ambiguity" + PRO;
+	
 
 	// 分割符号
 	public static final String EQUAL_SEP = "====";
