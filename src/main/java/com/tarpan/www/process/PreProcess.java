@@ -233,7 +233,8 @@ public class PreProcess {
 				if(sumList.contains(seger)){
 					phraseList.add("SUM");
 					lb = i;
-				}else if(list[i]=="没有#VE" || list[i]=="没#VE"){
+				}else if(list[i]=="没有#VE" || list[i]=="没#VE"
+						|| list[i] == "不#AD"){
 					String ret = doNo(yList,list[i],i,phraseList,dict);
 					if(!StringUtil.isNullOrBlank(ret)){
 						farSenti.add(ret);
@@ -327,7 +328,7 @@ public class PreProcess {
 								phraseList.add(list[i-1]+list[i]);
 								lb=i;
 							}else{
-								phraseList.add(list[1]+"-"+(i+1));
+								phraseList.add(list[i]+"-"+(i+1));
 								lb=i;
 							}
 						}else{
@@ -387,6 +388,8 @@ public class PreProcess {
 					}
 					
 					if("JJ".equals(label)){
+						System.out.println(seger + " J;J " +label);
+
 						if(am.contains(seger)){ //handler  ambiguity
 							String jjj = searchList(yList, "amod",seger+"-"+(i+1));
 							if(!StringUtil.isNullOrBlank(jjj)){
@@ -419,7 +422,6 @@ public class PreProcess {
 						lb=i;
 					}
 				}else{
-					//System.out.println(seger);
 					if("VV".equals(label)){
 						//TODO
 						try{
@@ -537,11 +539,13 @@ public class PreProcess {
 						if(li[2].startsWith("DEV")){
 							finalPH.add(li[0]+"   "+li[2].substring(3));
 						}else{
+							//System.out.println("line2===="+line);
 							List<String> tempList = Arrays.asList("都","就","却","还是");
 							if(tempList.contains(li[0])){
 						        finalPH.add(RegexUtil.eregReplace("\\w{1,3}",
 						        		li[1]+"   "+li[2],""));
 							}else{
+								//System.out.println("line3===="+li[1]+"   "+li[2]);
 								String temp = RegexUtil.eregReplace("\\w{1,3}",
 						        		StringUtil.arrayToString(li, "   "),"");
 						        finalPH.add(Check.processADVS(temp));
@@ -582,7 +586,6 @@ public class PreProcess {
 				}
 			}
 		}
-		
 		return finalPH;
 	}
 	

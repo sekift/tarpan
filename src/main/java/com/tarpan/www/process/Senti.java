@@ -14,6 +14,7 @@ import org.apache.commons.io.LineIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tarpan.www.Constants;
 import com.tarpan.www.util.StringUtil;
 
 public class Senti {
@@ -77,8 +78,10 @@ public class Senti {
 			return strength;
 		}
 
+		phrase = phrase.trim().replace("   ", " ");
 		String[] li = phrase.split(" ");
 		int len = li.length;
+		//System.out.println("len: " + len );
 		if (len == 1) {
 			if (null != sentiDict.get(li[0])) {
 				strength = sentiDict.get(li[0]);
@@ -97,11 +100,14 @@ public class Senti {
 				oov.add(li[1]);
 				strength = 0.0;
 			}
+			
+			System.out.println("strength2: " + strength );
 			if ("shift".equals(li[0]) && flag) {
-				strength = strength > 0.0 ? strength - 4 : strength + 4;
+				strength = strength > 0.0 ? strength - Constants.SHIFT_VALUE : strength + Constants.SHIFT_VALUE;
 			} else if ("不太".equals(li[0]) && flag) {
-				strength = strength > 0.0 ? strength - 5 : strength + 5;
+				strength = strength > 0.0 ? strength - Constants.BUTAI_VALUE : strength + Constants.BUTAI_VALUE;
 			} else if (advDict.containsKey(li[0])) {
+				System.out.println("strength3: " + advDict.get(li[0]) +" * " + strength );
 				strength *= advDict.get(li[0]);
 			}
 		} else if (len == 3) {
@@ -112,17 +118,15 @@ public class Senti {
 				strength = 0.0;
 			}
 			if (advDict.containsKey(li[1])) {
+				System.out.println("strength4: " + advDict.get(li[1]) + "*" + strength);
 				strength *= advDict.get(li[1]);
 			}
 			List<String> tempList = Arrays.asList("shift", "没", "没有");
 			if (tempList.contains(li[0])) {
-				if (strength > 0) {
-					strength -= 4;
-				} else if (strength < 0) {
-					strength += 4;
-				}
+				strength = strength > 0.0 ? strength - Constants.SHIFT_VALUE : strength + Constants.SHIFT_VALUE;
 			} else {
 				if (advDict.containsKey(li[0])) {
+					System.out.println("strength5: " + advDict.get(li[0]) +" * " + strength );
 					strength *= advDict.get(li[0]);
 				}
 			}
@@ -135,10 +139,12 @@ public class Senti {
 			}
 			for (int i = len - 2; i > -1; i--) {
 				if (advDict.containsKey(li[i])) {
+					System.out.println("strength6: " + advDict.get(li[i]) +" * " + strength );
 					strength *= advDict.get(li[i]);
 				}
 			}
 		}
+		strength=((int)(strength*100))/100.0;
 		return strength;
 	}
 

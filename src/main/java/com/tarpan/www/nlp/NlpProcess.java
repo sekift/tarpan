@@ -10,7 +10,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import com.tarpan.www.util.HttpUtil;
-import com.tarpan.www.util.StringUtil;
 
 /**
  * 斯坦福分词处理
@@ -23,11 +22,11 @@ public class NlpProcess {
 	
 	public static Map<String, String> parse(String text){
 		Map<String, String> map = new HashMap<String, String>();
-		text = "联想的视频软件挺烂,那个噪音吓死人~关声音就没了~勉强接受~";
+		text = "中国科幻扛鼎之作。前两部给我的感觉是精彩，到第三部就是震撼了！值得细细读，慢慢读，反复读。";
 		//分析，作为例子，下面是结果
-		String seged = "联想 的 视频 软件 挺 烂  那个 噪音 吓死 人 ~ 关 声音 就 没 了 ~ 勉强 接受 ~";
-		String posed = "联想#NR 的#DEG 视频#NN 软件#NN 挺#AD 烂#VA #PU 那个#DT 噪音#NN 吓死#VV 人#NN ~#PU 关#VV 声音#NN 就#AD 没#VE 了#AS ~#PU 勉强#AD 接受#VV ~#PU";
-		String parsed = "nmod:assmod(软件-4 联想-1)   case(联想-1 的-2)   compound:nn(软件-4 视频-3)   nsubj(烂-6 软件-4)   advmod(烂-6 挺-5)   root(ROOT-0 烂-6)   punct(烂-6 -7)   det(噪音-9 那个-8)   nsubj(吓-10 噪音-9)   conj(烂-6 吓-10)   nsubj(接受-19 死人-11)   punct(死人-11 ~-12)   parataxis:prnmod(死人-11 关-13)   dobj(关-13 声音-14)   advmod(没了-16 就-15)   conj(关-13 没了-16)   punct(死人-11 ~-17)   advmod(接受-19 勉强-18)   ccomp(吓-10 接受-19)   punct(烂-6 ~-20)";
+		String seged = "中国 科幻 扛鼎之作 。 前 两 部 给我 的 感觉 是 精彩 ， 到 第三 部 就 是 震撼 了 ！ 值得 细细 读 ， 慢慢 读 ， 反复 读 。";
+		String posed = "中国#NR 科幻#JJ 扛鼎之作#NN 。#PU 前#DT 两#CD 部#M 给我#NN 的#DEG 感觉#NN 是#VC 精彩#VA ，#PU 到#P 第三#OD 部#M 就#AD 是#VC 震撼#VV 了#AS ！#PU 值得#VV 细细#AD 读#VV ，#PU 慢慢#AD 读#VV ，#PU 反复#AD 读#VV 。#PU";
+		String parsed = "nmod(扛鼎之作-3, 中国-1)   amod(扛鼎之作-3, 科幻-2)   nmod:topic(精彩-12, 扛鼎之作-3)   punct(精彩-12, 。-4)   det(给我-8, 前-5)   dep(前-5, 两-6)   mark:clf(两-6, 部-7)   nmod:assmod(感觉-10, 给我-8)   case(给我-8, 的-9)   nsubj(精彩-12, 感觉-10)   cop(精彩-12, 是-11)   root(ROOT-0, 精彩-12)   punct(精彩-12, ，-13)   case(第三-15, 到-14)   nmod:prep(震撼-19, 第三-15)   mark:clf(第三-15, 部-16)   advmod(震撼-19, 就-17)   cop(震撼-19, 是-18)   conj(精彩-12, 震撼-19)   aux:asp(震撼-19, 了-20)   punct(精彩-12, ！-21)   conj(精彩-12, 值得-22)   advmod(读-24, 细细-23)   ccomp(值得-22, 读-24)   punct(读-24, ，-25)   advmod(读-27, 慢慢-26)   conj(读-24, 读-27)   punct(读-24, ，-28)   advmod(读-30, 反复-29)   conj(读-24, 读-30)   punct(精彩-12, 。-31)";
 		map.put("seged", seged);
 		map.put("posed", posed);
 		map.put("parsed", parsed);
@@ -39,6 +38,11 @@ public class NlpProcess {
 	 */
 	public static Map<String, String> parseFromWeb(String text){
 		Map<String, String> map = new HashMap<String, String>();
+		if(text.length()>72){
+			System.out.println("句子长度为：" + text.length()+" ,已经大于web分词的72个字符限制。");
+			return map;
+		}
+		
 		String url = "http://nlp.stanford.edu:8080/parser/index.jsp";
 		
 		Map<String, String> params = new HashMap<String, String>();
@@ -82,8 +86,11 @@ public class NlpProcess {
 	 *
 	 */
 	public static Map<String, List<String>> parser(String text){
-		Map<String, String> result = parseFromWeb(text);
+		Map<String, String> result = parseFromWeb(text); //
 		Map<String, List<String>> map = new HashMap<String, List<String>>();
+		if(result == null || result.size() == 0){
+			return map;
+		}
 		List<String> seList = new ArrayList<String>();
 		List<String> poList = new ArrayList<String>();
 		List<String> paList = new ArrayList<String>();
@@ -94,7 +101,6 @@ public class NlpProcess {
 		map.put("seged", seList);
 		map.put("posed", poList);
 		map.put("parsed", paList);
-		
 		return map;
 	}
 

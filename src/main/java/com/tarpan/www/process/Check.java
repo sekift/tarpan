@@ -149,10 +149,10 @@ public class Check {
 	    String[] li=line.split(" ");
 	    if(li.length == 3){
 	    	if("不太".equals(li[0]+""+li[1])){
-	    		return "不太 "+li[2]+"\n"; // minus -5
+	    		return "不太 "+li[2]+" "; // minus -5
 	    	}
 	    }
-	    return line + "\n";
+	    return line + " ";
 	}
 	
 	/**

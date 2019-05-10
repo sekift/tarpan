@@ -31,6 +31,10 @@ public class Constants {
 	// 分割符号
 	public static final String EQUAL_SEP = "====";
 	
+	// shift 情感的分值
+	public static final double SHIFT_VALUE = 4.0;
+	// 不太 情感的分值
+	public static final double BUTAI_VALUE = 5.0;
 	
 	/**
 	 * 匹配
