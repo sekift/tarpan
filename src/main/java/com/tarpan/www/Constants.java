@@ -1,7 +1,5 @@
 package com.tarpan.www;
 
-import java.io.File;
-
 /**
  * 常量值
  * @author sekift
@@ -9,7 +7,7 @@ import java.io.File;
  */
 public class Constants {
 
-	public static final String PRE = File.separatorChar + "data" + File.separatorChar;
+	public static final String PRE = "/data/";
 	public static final String PRO = ".txt";
 	
 	public static final String IV_FILE = PRE + "iv" + PRO;
@@ -18,10 +16,25 @@ public class Constants {
 	public static final String STOPWORD_FILE = PRE + "stopword" + PRO;
 	public static final String NEG_FILE = PRE + "neg" + PRO;
 	public static final String POS_FILE = PRE + "pos" + PRO;
+	public static final String OOV_FILE = PRE + "oov" + PRO;
+	public static final String ADV_FILE = PRE + "advxxx" + PRO;
+	public static final String SENTI_FILE = PRE + "sentiment2" + PRO;
+	public static final String NONLI_FILE = PRE + "nonlinear" + PRO;
+	public static final String SENTINN_FILE = PRE + "sentiNN" + PRO;
+	public static final String SENTIVV_FILE = PRE + "sentiVV" + PRO;
+	public static final String SENTIAD_FILE = PRE + "sentiAD" + PRO;
+	public static final String SUMMARY_FILE = PRE + "summary" + PRO;
+	public static final String ASPECT_FILE = PRE + "aspectDICT" + PRO;
+	public static final String AM_FILE = PRE + "ambiguity" + PRO;
+	
 
 	// 分割符号
 	public static final String EQUAL_SEP = "====";
 	
+	// shift 情感的分值
+	public static final double SHIFT_VALUE = 4.0;
+	// 不太 情感的分值
+	public static final double BUTAI_VALUE = 5.0;
 	
 	/**
 	 * 匹配

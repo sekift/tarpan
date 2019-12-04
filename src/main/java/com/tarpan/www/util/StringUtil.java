@@ -3,6 +3,8 @@ package com.tarpan.www.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -302,5 +304,81 @@ public class StringUtil {
 		    }
 		}
 		return result;	    
+	}
+	
+	/**
+	 * 将数组按sp分隔组成字符串
+	 * 
+	 * @param arr
+	 * @param sp
+	 * @return
+	 */
+	public static String arrayToString(String[] arr, String sp) {
+		StringBuilder result = new StringBuilder();
+		if (arr.length < 1) {
+			return "";
+		}
+		for (int i = 0; i < arr.length; i++) {
+			result.append(arr[i]);
+			if (i < arr.length - 1) {
+				result.append(sp);
+			}
+		}
+
+		return result.toString();
+	}
+	
+	/**
+	 * 将数组的部分按sp分隔组成字符串
+	 * 
+	 * @param arr
+	 * @param sp
+	 * @return
+	 */
+	public static String arrayToString(String[] arr, String sp, int begin, int end) {
+		StringBuilder result = new StringBuilder();
+		if (arr.length < 1) {
+			return "";
+		}
+		for (int i = begin; i < end; i++) {
+			result.append(arr[i]);
+			if (i < end - 1) {
+				result.append(sp);
+			}
+		}
+		
+		return result.toString();
+	}
+	
+	/**
+	 * 将list按sp分隔组成字符串
+	 * 
+	 * @param list
+	 * @param sp
+	 * @return
+	 */
+	public static String listToString(List<?> list, String sp) {
+		StringBuilder result = new StringBuilder();
+		int size = list.size();
+		if (size < 1) {
+			return "";
+		}
+		for (int i = 0; i < size; i++) {
+			result.append(list.get(i));
+			if (i < size - 1) {
+				result.append(sp);
+			}
+		}
+
+		return result.toString();
+	}
+	
+	public static void main(String args[]){
+		List<Integer> list = new ArrayList<Integer>();
+		list.add(1);
+		list.add(2);
+		list.add(3);
+		list.add(4);
+		System.out.println(listToString(list, "="));
 	}
 }
