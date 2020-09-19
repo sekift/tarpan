@@ -5,6 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>tarpan</name>
   <description>情感分析</description>
+  
 <properties>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>
@@ -21,7 +22,7 @@
 		<io.version>2.4</io.version>
 		<lang.version>2.4</lang.version>
 		<suffixtree.version>1.0.2</suffixtree.version>
-		<jsoup.version>1.11.3</jsoup.version>
+		<jsoup.version>1.11.2</jsoup.version>
 	</properties>
 
 	<dependencies>
@@ -70,12 +71,12 @@
 			<artifactId>commons-beanutils</artifactId>
 			<version>${beanutils.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.suhininalex/suffixtree -->
+		<!-- https://mvnrepository.com/artifact/com.suhininalex/suffixtree
 		<dependency>
 		    <groupId>com.suhininalex</groupId>
 		    <artifactId>suffixtree</artifactId> 
 		    <version>${suffixtree.version}</version>
-		</dependency>
+		</dependency>-->
 	    <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
 	    <dependency>
 		    <groupId>org.jsoup</groupId>
