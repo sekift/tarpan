@@ -23,7 +23,7 @@
 		<lang.version>2.4</lang.version>
 		<suffixtree.version>1.0.2</suffixtree.version>
 		<jsoup.version>1.11.2</jsoup.version>
-	    <junit.version>4.13</junit.version>
+	    <junit.version>4.13.1</junit.version>
 	</properties>
 
 	<dependencies>
