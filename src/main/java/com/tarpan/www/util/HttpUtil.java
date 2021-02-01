@@ -24,7 +24,9 @@ public class HttpUtil {
 
 	private static Logger logger = Logger.getLogger(HttpUtil.class);
 
-	// 支持的Http method
+	/**
+	 * 支持的Http method
+ 	 */
 	private static enum HttpMethod {
 		POST, DELETE, GET, PUT, HEAD;
 	}

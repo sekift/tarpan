@@ -159,12 +159,13 @@ class Node {
             int mid = (low + high) >>> 1;
             int midVal = data[mid];
 
-            if (midVal < index)
-            low = mid + 1;
-            else if (midVal > index)
-            high = mid - 1;
-            else
-            return true;
+            if (midVal < index) {
+                low = mid + 1;
+            } else if (midVal > index) {
+                high = mid - 1;
+            } else {
+                return true;
+            }
         }
         return false;
         // Java 5 equivalent to

@@ -42,5 +42,6 @@ VE	as the main verb	“有”作为主要动词	“有”，“无”<br />
 VV	Other verbs	其他动词，普通动词	走，可能，喜欢<br />
 
 ## 分词使用斯坦福NLP
-CoreNLP：https://stanfordnlp.github.io/CoreNLP/<br />
+CoreNLP：https://github.com/stanfordnlp/CoreNLP/<br />
+在线依存关系：http://nlp.stanford.edu:8080/parser/index.jsp<br />
 也有集成的，在线的分词，例如例子中使用的，但是性能不怎么样。<br />

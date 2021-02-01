@@ -1,7 +1,7 @@
 package com.tarpan.www.util;
 
 /**
- * 
+ * 繁简转换
  * @author:sekift
  * @time:2014-8-18 下午05:57:47
  * @version:
@@ -28,10 +28,11 @@ public class LanguageUtil {
 		StringBuilder result = new StringBuilder(content.length());
 		for (int i = 0; i < content.length(); i++) {
 			int index = traditionalTable.indexOf(content.charAt(i));
-			if (index != -1)
+			if (index != -1) {
 				result.append(simpleTable.charAt(index));
-			else
+			} else {
 				result.append(content.charAt(i));
+			}
 		}
 		return result.toString();
 	}

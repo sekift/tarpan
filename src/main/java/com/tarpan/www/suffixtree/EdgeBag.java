@@ -84,9 +84,9 @@ class EdgeBag implements Map<Character, Edge> {
 	}
 
 	private int search(char c) {
-		if (chars == null)
+		if (chars == null) {
 			return -1;
-
+		}
 		if (chars.length > BSEARCH_THRESHOLD) {
 			return java.util.Arrays.binarySearch(chars, (byte) c);
 		}

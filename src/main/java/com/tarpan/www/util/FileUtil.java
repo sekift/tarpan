@@ -19,6 +19,15 @@ import org.apache.commons.io.LineIterator;
  *
  */
 public class FileUtil {
+
+	/**
+	 * 获取完整的路径
+	 * @param fileName 文件名称
+	 * @return File
+	 */
+	public static File getDataFile(String fileName) {
+		return new File(getDataPath(fileName));
+	}
 	
 	/**
 	 * 获取完整的路径
@@ -37,28 +46,12 @@ public class FileUtil {
 	}
 	
 	/**
-	 * 获取完整的路径
-	 * @param fileName 文件名称
-	 * @return File
-	 */
-	public static File getDataFile(String fileName) {
-		URL resource = FileUtil.class.getResource(fileName);
-		if (resource == null) {
-			resource = FileUtil.class.getClassLoader().getResource(fileName);
-			if (resource == null) {
-				resource = ClassLoader.getSystemResource(fileName);
-			}
-		}
-		return new File(resource.getPath());
-	}
-	
-	/**
 	 * 文件转set
 	 * @param path
 	 * @return
 	 */
 	public static Set<String> file2Set(String path) {
-		Set<String> set = new HashSet<String>();
+		Set<String> set = new HashSet<>();
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
 			while(lines.hasNext()){
@@ -79,7 +72,7 @@ public class FileUtil {
 	 * @return
 	 */
 	public static List<String> file2List(String path) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
 			while(lines.hasNext()){
@@ -100,7 +93,7 @@ public class FileUtil {
      * @return
      */
     public static Map<String, Integer> file2Dic(String path){
-		Map<String, Integer> map = new HashMap<String, Integer>();
+		Map<String, Integer> map = new HashMap<>(10000);
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
 			while(lines.hasNext()){
@@ -121,7 +114,7 @@ public class FileUtil {
      * @return
      */
     public static Map<String, String> file2DicStr(String path){
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>(32);
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
 			while(lines.hasNext()){

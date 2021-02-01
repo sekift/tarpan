@@ -1,24 +1,17 @@
-package com.tarpan.www.process;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.codec.Charsets;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.tarpan.www.feature;
 
 import com.tarpan.www.Constants;
 import com.tarpan.www.util.FileUtil;
+import com.tarpan.www.util.LogUtils;
 import com.tarpan.www.util.RegexUtil;
 import com.tarpan.www.util.StringUtil;
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * 检查类
@@ -26,12 +19,14 @@ import com.tarpan.www.util.StringUtil;
  *
  */
 public class Check {
-	
-    private static Logger logger = LoggerFactory.getLogger(Check.class);
-    
-    // path to the final phrase,return empty phrase line number
-    public static List<Integer> checkoutPharse(String path) {
-    	List<Integer> emptyList = new ArrayList<Integer>();
+
+	/**
+	 * path to the final phrase,return empty phrase line number
+	 * @param path
+	 * @return
+	 */
+	public static List<Integer> checkoutPharse(String path) {
+    	List<Integer> emptyList = new ArrayList<>();
 		try{
 		    int flag = 0;
 		    int lineNO = 0;
@@ -51,10 +46,10 @@ public class Check {
 				}
 			}
 		}catch(Exception e){
-			logger.error("[情感分析]checkoutPharse出错，", e);
+			LogUtils.logError("[情感分析]checkoutPharse出错，", e);
 			e.printStackTrace();
 		}
-		logger.info("the length of empty phrase reviews is: "+emptyList.size());
+		LogUtils.logInfo("the length of empty phrase reviews is: "+emptyList.size());
 		return emptyList;
     }
     
@@ -78,15 +73,15 @@ public class Check {
 				}
 			}
 		}catch(Exception e){
-			logger.error("[情感分析]countPharse出错，", e);
+			LogUtils.logError("[情感分析]countPharse出错，", e);
 			e.printStackTrace();
 		}
-		logger.info("the number of length 1 2 3 and more than three in a phrase is: " 
+		LogUtils.logInfo("the number of length 1 2 3 and more than three in a phrase is: "
 		     + len1 + "," + len2 + "," + len3 + "," + lenx);
     }
     
     public static Set<String> findLabels(String path) {
-    	Set<String> a = new HashSet<String>();
+    	Set<String> a = new HashSet<>();
     	//"./pos_phrase.txt"
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
@@ -98,7 +93,7 @@ public class Check {
 				}
 			}
 		}catch(Exception e){
-			logger.error("[情感分析]checkoutPharse出错，", e);
+			LogUtils.logError("[情感分析]checkoutPharse出错，", e);
 			e.printStackTrace();
 		}
 		return a;
@@ -106,7 +101,7 @@ public class Check {
     
     //read a file ,output  k,v
     public static void file2count(String path) {
-    	Map<String, Integer> dict = new HashMap<String, Integer>();
+    	Map<String, Integer> dict = new HashMap<>(128);
     	//"./pos_phrase.txt"
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
@@ -121,63 +116,24 @@ public class Check {
 				}
 			}
 		}catch(Exception e){
-			logger.error("[情感分析]file2count出错，", e);
+			LogUtils.logError("[情感分析]file2count出错，", e);
 			e.printStackTrace();
 		}
-		
-		logger.info(dict.size()+"");
+
+		LogUtils.logInfo(dict.size()+"");
     }
-    
+
 	public static void recordOOV(String[] oov) {
-		for (String str : oov) {
-			try {
+		try {
+			for (String str : oov) {
 				FileUtils.writeStringToFile(new File(FileUtil.getDataPath(
 						Constants.OOV_FILE)), str + "   \n", Charsets.UTF_8, true);
-			} catch (IOException e) {
-				e.printStackTrace();
+
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		logger.debug("the length of OOV is " + oov.length);
-	}
-    
-	/**
-	 * 处理ADVS词性的词
-	 * @param line
-	 * @return
-	 */
-	public static String processADVS(String line){
-	    String[] li=line.split(" ");
-	    if(li.length == 3){
-	    	if("不太".equals(li[0]+""+li[1])){
-	    		return "不太 "+li[2]+" "; // minus -5
-	    	}
-	    }
-	    return line + " ";
-	}
-	
-	/**
-	 * 
-	 * 查找AD或VE词性后面的句子
-	 * 输入：在这里#NN分#VV几乎#AD没有#VE什么#DT合口味#NN
-	 * 输出：
-	 * m 几乎#AD没有#VE什么#DT合口味#NN
-	 * m1 没有#VE什么#DT合口味#NN
-	 * @param path
-	 * @return
-	 */
-	public static String findADorVE(String phrase){
-		String[] li = phrase.split("#PU");
-		if(li.length == 2){
-			phrase = li[1];
-		}
-		String m = RegexUtil.fetchStr("[\u4e00-\u9fa5]+#AD.*", phrase);
-		String m1 = RegexUtil.fetchStr("[\u4e00-\u9fa5]+#VE.*", phrase);
-		if(!StringUtil.isNullOrBlank(m)){
-			phrase = m;
-		}else if(!StringUtil.isNullOrBlank(m1)){
-			phrase = m1;
-		}
-		return phrase;
+		LogUtils.logDebug("the length of OOV is " + oov.length);
 	}
 	
 	/**
@@ -213,33 +169,9 @@ public class Check {
 				}
 			}
 		}catch(Exception e){
-			logger.error("[情感分析]splitSegmented出错，", e);
+			LogUtils.logError("[情感分析]splitSegmented出错，", e);
 			e.printStackTrace();
 		}
-	}
-	
-	public static Map<String, String> loadAspectsenti(String inPath){
-    	Map<String, String> dic = new HashMap<String, String>();
-		try{
-			LineIterator lines = FileUtils.lineIterator(new File(inPath), Charsets.UTF_8.toString());
-			while(lines.hasNext()){
-				String line = lines.next().trim();
-				if(!StringUtil.isNullOrBlank(line)){
-					String[] li = line.split(" ");
-					if(li.length == 3){
-						String li02 = li[0]+" "+li[1];
-						if(dic.containsKey(li02)){
-							continue;
-						}else{
-							dic.put(li02, li[2]);
-						}
-					}
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return dic;
 	}
 	
 	public static String statSentences(String path){
@@ -255,7 +187,7 @@ public class Check {
 							maxl = len;
 						}
 						if(len > 80){
-							logger.info("line = ", line);
+							LogUtils.logInfo("line = " + line);
 							cnt+=1;
 						}
 					}
@@ -288,10 +220,10 @@ public class Check {
 	
 	public static void checkDICT(String path, String path2){
 		Set<String> a = FileUtil.file2Set(path);
-		logger.info("path length = "+a.size());
+		LogUtils.logInfo("path length = "+a.size());
 		
 		Set<String> b = FileUtil.file2Set(path2);
-		logger.info("path length = "+b.size());
+		LogUtils.logInfo("path length = "+b.size());
 		
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path2), Charsets.UTF_8.toString());
@@ -299,7 +231,7 @@ public class Check {
 				String line = lines.next().trim();
 				if(!StringUtil.isNullOrBlank(line) 
 						&& !a.contains(line)){
-					logger.info(line);
+					LogUtils.logInfo(line);
 				}
 			}
 		}catch(Exception e){
@@ -308,8 +240,8 @@ public class Check {
 	}
 	
 	public static void diffTwoFile(String path1, String path2){
-		Set<String> a = new HashSet<String>();
-		Set<String> b = new HashSet<String>();
+		Set<String> a = new HashSet<>();
+		Set<String> b = new HashSet<>();
 		try{
 			LineIterator lines = FileUtils.lineIterator(new File(path1), Charsets.UTF_8.toString());
 			while(lines.hasNext()){
@@ -317,12 +249,11 @@ public class Check {
 				if(!StringUtil.isNullOrBlank(line)){
 					String li = line.split(" ")[0];
 					if(a.contains(li)){
-						logger.info(li);
+						LogUtils.logInfo(li);
 					}
 					a.add(li);
 				}
 			}
-			
 			
 			LineIterator lines2 = FileUtils.lineIterator(new File(path2), Charsets.UTF_8.toString());
 			while(lines2.hasNext()){
@@ -332,9 +263,9 @@ public class Check {
 					b.add(li);
 				}
 			}
-			logger.info(a.size()+" "+b.size());
+			LogUtils.logInfo(a.size()+" "+b.size());
 			a.removeAll(b);
-			logger.info("c = " + a);
+			LogUtils.logInfo("c = " + a);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -342,7 +273,6 @@ public class Check {
 	
 	
 	public static void main(String args[]){
-		System.out.println(findADorVE("在这里#NN分#VV几乎#AD没有#VE什么#DT合口味#NN"));
 		String[] li = "分为非发。发违法.fawf、feewff we！分。为非!分".split("。|．|！|？|\\?|!|\\.");
 		for(String str : li){
 		System.out.println(str);

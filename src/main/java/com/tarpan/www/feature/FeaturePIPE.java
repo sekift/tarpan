@@ -1,18 +1,16 @@
-package com.tarpan.www.process;
+package com.tarpan.www.feature;
+
+import com.tarpan.www.Constants;
+import com.tarpan.www.util.FileUtil;
+import com.tarpan.www.util.LogUtils;
+import com.tarpan.www.util.StringUtil;
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.codec.Charsets;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.tarpan.www.Constants;
-import com.tarpan.www.util.FileUtil;
-import com.tarpan.www.util.StringUtil;
 
 /**
  * make a distribution of the features
@@ -21,13 +19,11 @@ import com.tarpan.www.util.StringUtil;
  *
  */
 public class FeaturePIPE {
-
-	private static Logger logger = LoggerFactory.getLogger(FeaturePIPE.class);
+	private static Map<String, Integer> posD = FileUtil.file2Dic(FileUtil.getDataPath(Constants.POS_FILE));
+	private static Map<String, Integer> negD = FileUtil.file2Dic(FileUtil.getDataPath(Constants.NEG_FILE));
 
 	public static void count(String path, String out) {
-		Map<String, Integer> posD = FileUtil.file2Dic(FileUtil.getDataPath(Constants.POS_FILE));
-		Map<String, Integer> negD = FileUtil.file2Dic(FileUtil.getDataPath(Constants.NEG_FILE));
-		Map<String, Map<String, Integer>> distribution = new HashMap<String, Map<String, Integer>>();
+		Map<String, Map<String, Integer>> distribution = new HashMap<>(128);
 		try {
 			LineIterator lines = FileUtils.lineIterator(new File(path), Charsets.UTF_8.toString());
 			while (lines.hasNext()) {
@@ -37,7 +33,7 @@ public class FeaturePIPE {
 				String opinion = li[1];
 				if (!StringUtil.isNullOrBlank(opinion)) {
 					if (posD.containsKey(opinion)) {
-						Map<String, Integer> map = new HashMap<String, Integer>();
+						Map<String, Integer> map = new HashMap<>(1000);
 						if (!distribution.containsKey(feature)) {
 							map.put("pos", 1);
 							map.put("neg", 0);
@@ -48,7 +44,7 @@ public class FeaturePIPE {
 							distribution.put(feature, map);
 						}
 					} else if (negD.containsKey(opinion)) {
-						Map<String, Integer> map = new HashMap<String, Integer>();
+						Map<String, Integer> map = new HashMap<>(1000);
 						if (!distribution.containsKey(feature)) {
 							map.put("pos", 0);
 							map.put("neg", 1);
@@ -80,15 +76,12 @@ public class FeaturePIPE {
 
 			}
 		} catch (Exception e) {
-			logger.error("[情感分析]count出错，", e);
+			LogUtils.logError("[情感分析]count出错，", e);
 			e.printStackTrace();
 		}
 	}
-	
-	private static Map<String, Integer> posD = FileUtil.file2Dic(FileUtil.getDataPath(Constants.POS_FILE));
-	private static Map<String, Integer> negD = FileUtil.file2Dic(FileUtil.getDataPath(Constants.NEG_FILE));
-	private static Map<String, Map<String, Integer>> distribution = new HashMap<String, Map<String, Integer>>();
-	
+
+	private static Map<String, Map<String, Integer>> distribution = new HashMap<>(128);
 	public static void countStream(String npop) {
 		npop = npop.trim();
 		String[] li = npop.split("   ");
@@ -96,7 +89,7 @@ public class FeaturePIPE {
 		String opinion = li[1];
 		if (!StringUtil.isNullOrBlank(opinion)) {
 			if (posD.containsKey(opinion)) {
-				Map<String, Integer> map = new HashMap<String, Integer>();
+				Map<String, Integer> map = new HashMap<>(1000);
 				if (!distribution.containsKey(feature)) {
 					map.put("pos", 1);
 					map.put("neg", 0);
@@ -107,7 +100,7 @@ public class FeaturePIPE {
 					distribution.put(feature, map);
 				}
 			} else if (negD.containsKey(opinion)) {
-				Map<String, Integer> map = new HashMap<String, Integer>();
+				Map<String, Integer> map = new HashMap<>(1000);
 				if (!distribution.containsKey(feature)) {
 					map.put("pos", 0);
 					map.put("neg", 1);
@@ -134,8 +127,7 @@ public class FeaturePIPE {
 			int total = posCnt + negCnt;
 			double posRatio = (double) posCnt / total;
 			double negRatio = (double) negCnt / total;
-			System.out.println(str + ": " + "the positive ratio: " + posRatio + " , the negative ratio: " + negRatio);
-			logger.info(str + ": " + "the positive ratio: " + posRatio + " , the negative ratio: " + negRatio + "\n");
+			LogUtils.logInfo(str + ": " + "the positive ratio: " + posRatio + " , the negative ratio: " + negRatio);
 
 		}
 	}
@@ -143,8 +135,9 @@ public class FeaturePIPE {
 	public static void main(String args[]){
 		String[] arr = {"并非   玉洁冰清","并非   无地自容", "你   好看", "我   好看","并非   去世"};
 		for(String str : arr){
-		   countStream(str);
+//		   countStream(str);
+			count(str, "pipe.txt");
 		}
-		showCount();
+//		showCount();
 	}
 }

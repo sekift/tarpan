@@ -99,7 +99,7 @@ public class StringUtil {
 	 */
 	public static boolean isBlank(String value) {
 		boolean ret = false;
-		if (value != null && value.equals("")) {
+		if (value != null && "".equals(value)) {
 			ret = true;
 		}
 		return ret;
@@ -346,7 +346,6 @@ public class StringUtil {
 				result.append(sp);
 			}
 		}
-		
 		return result.toString();
 	}
 	
@@ -374,7 +373,7 @@ public class StringUtil {
 	}
 	
 	public static void main(String args[]){
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		list.add(1);
 		list.add(2);
 		list.add(3);
