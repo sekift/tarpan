@@ -1,16 +1,10 @@
 package com.tarpan.www.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 /**
  * 有关HTTP连接的类 提供通过HTTP协议获取内容的方法 <br/>
@@ -21,9 +15,6 @@ import org.apache.log4j.Logger;
  * @version:
  */
 public class HttpUtil {
-
-	private static Logger logger = Logger.getLogger(HttpUtil.class);
-
 	/**
 	 * 支持的Http method
  	 */
@@ -97,7 +88,7 @@ public class HttpUtil {
 			}
 			return result.toString();
 		} catch (Exception e) {
-			logger.error("调用接口[" + url + "]失败！请求URL:" + url + ",参数：" + params, e);
+			LogUtils.logError("调用接口[" + url + "]失败！请求URL:" + url + ",参数：" + params, e);
 			// 处理错误流
 			try {
 				byte[] buf = new byte[100];
