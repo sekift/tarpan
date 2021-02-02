@@ -1,11 +1,11 @@
-#Tarpan
+# 🎨 Tarpan
 European Wild Horse(Tarpan)，欧洲野马于1877年灭绝。 在这里是自主实现的中文细粒度情感分析程序，能够给出词语、句子、段落的具体得分。<br />
 
-## 使用
+## 💻 应用
 现在用在歌词情感分析上，参考项目：https://github.com/sekift/quelili 。<br />
  
-## 参考以下资料
-宾州树《汉语词性标注规范》<br />
+## 📖 参考以下资料
+### 🌰 宾州树《汉语词性标注规范》<br />
 词性标记	英文名称	中文名称	例子<br />
 AD	adverbs	副词	“还”<br />
 AS	Aspect marker	体标记	了，着，过<br />
@@ -41,7 +41,10 @@ VC	Copula	系动词	“是”，“为”，“非”<br />
 VE	as the main verb	“有”作为主要动词	“有”，“无”<br />
 VV	Other verbs	其他动词，普通动词	走，可能，喜欢<br />
 
-## 分词使用斯坦福NLP
+### 🚩 依存关系含义
+
+
+## 🤖 分词使用斯坦福NLP
 CoreNLP：https://github.com/stanfordnlp/CoreNLP/<br />
 在线依存关系：http://nlp.stanford.edu:8080/parser/index.jsp<br />
 也有集成的，在线的分词，例如例子中使用的，但是性能不怎么样。<br />
