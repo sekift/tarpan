@@ -80,7 +80,7 @@ public class NlpProcess {
         Map<String, String> resultMap = null;
         try {
             params.put("input", URLEncoder.encode(text, "UTF-8"));
-            String response = HttpUtil.get(NATIVE_URL, params, 10 * 3600, 10 * 3600, "utf-8");
+            String response = HttpUtil.post(NATIVE_URL, params, 10 * 3600, 10 * 3600, "utf-8");
             resultMap = JSONObject.parseObject(response, Map.class);
         }catch (Exception e){
             e.printStackTrace();
