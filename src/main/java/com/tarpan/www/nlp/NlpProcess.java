@@ -1,11 +1,14 @@
 package com.tarpan.www.nlp;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPObject;
 import com.tarpan.www.util.HttpUtil;
 import com.tarpan.www.util.LogUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.Map;
  */
 public class NlpProcess {
     private static final String PARSER_URL = "http://nlp.stanford.edu:8080/parser/index.jsp";
+    private static final String NATIVE_URL = "http://10.0.2.155:8087/nlp/parser";
 
     /**
      * 分词和句法依存关系的示例
@@ -65,8 +69,27 @@ public class NlpProcess {
         return map;
     }
 
+    /**
+     * 本地开启分词
+     *
+     * @param text
+     * @return
+     */
+    public static Map<String, String> parseFromNative(String text) {
+        Map<String, String> params = new HashMap<>(2);
+        Map<String, String> resultMap = null;
+        try {
+            params.put("input", URLEncoder.encode(text, "UTF-8"));
+            String response = HttpUtil.get(NATIVE_URL, params, 10 * 3600, 10 * 3600, "utf-8");
+            resultMap = JSONObject.parseObject(response, Map.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
+
     public static void main(String args[]) {
-        System.out.println(parseFromWeb("太差了。"));
+        System.out.println(parseFromNative("酒店实在差 房间又小又脏 卫生间环境太差 整个酒店有点像马路边上的招待所 "));
     }
 
     /**
@@ -85,8 +108,18 @@ public class NlpProcess {
      * 2、posed: My#PRP$ dog#NN also#RB likes#VBZ eating#JJ sausage#NN .#PU
      * 3、parsed: root(ROOT-0, likes-4)   nmod:poss(dog-2, My-1)   nsubj(likes-4, dog-2)   advmod(likes-4, also-3)   dobj(likes-4, sausage-6)   punct(likes-4, .-7)   amod(sausage-6, eating-5)
      */
-    public static Map<String, List<String>> parser(String text) {
-        Map<String, String> result = parseFromWeb(text);
+    public static Map<String, List<String>> parser(String text, int type) {
+        Map<String, String> result;
+        switch (type) {
+            case 1:
+                result = parseFromNative(text);
+                break;
+            case 2:
+                result = parseFromWeb(text);
+                break;
+            default:
+                result = parseExample(text);
+        }
         Map<String, List<String>> map = new HashMap<>(4);
         if (result == null || result.size() == 0) {
             return map;

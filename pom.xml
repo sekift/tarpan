@@ -6,7 +6,7 @@
   <name>tarpan</name>
   <description>情感分析</description>
   
-<properties>
+    <properties>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>
 			UTF-8
@@ -23,9 +23,21 @@
 		<suffixtree.version>1.0.2</suffixtree.version>
 		<jsoup.version>1.11.2</jsoup.version>
 	    <junit.version>4.13.1</junit.version>
+	    <corenlp.verison>4.2.0</corenlp.verison>
+		<fastjson.version>1.2.73</fastjson.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>${corenlp.verison}</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>

@@ -10,7 +10,7 @@ public class Constants {
 	public static final String PRE = "/data/";
 	public static final String PRO = ".txt";
 	
-	public static final String IV_FILE = PRE + "iv" + PRO;
+	public static final String UNSURE_FILE = PRE + "unsure" + PRO;
 	public static final String MAYBEADV_FILE = PRE + "maybeADV" + PRO;
 	public static final String EMOJI_FILE = PRE + "emoji" + PRO;
 	public static final String STOPWORD_FILE = PRE + "stopword" + PRO;
@@ -26,6 +26,7 @@ public class Constants {
 	public static final String SUMMARY_FILE = PRE + "summary" + PRO;
 	public static final String ASPECT_FILE = PRE + "aspect" + PRO;
 	public static final String AMBIGUITY_FILE = PRE + "ambiguity" + PRO;
+	public static final String PUNCT_FILE = PRE + "punct" + PRO;
 	
 
 	// 分割符号

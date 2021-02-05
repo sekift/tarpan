@@ -75,7 +75,10 @@ public class SentiProcess {
                 }
             } else if (negAndPos.containsKey(seger)) {
                 if ("VA".equals(label)) {
-                    if (i > 0) {
+                    if (i == 0) {
+                        phraseList.add(posedArray[0] + "-1");
+                        lb = i;
+                    } else {
                         String p_label = getLabel(posedArray[i - 1]);
                         if (("DEV".equals(p_label) || "DEG".equals(p_label))
                                 && i > 1) {
@@ -119,9 +122,6 @@ public class SentiProcess {
                             phraseList.add(currentWord + '-' + (i + 1));
                             lb = i;
                         }
-                    } else {
-                        phraseList.add(posedArray[0] + "-1");
-                        lb = i;
                     }
                 }
 
@@ -131,12 +131,15 @@ public class SentiProcess {
                         continue;
                     }
 
-                    if (i > 0) {
+                    if (i == 0) {
+                        phraseList.add(posedArray[0] + "-1");
+                        lb = i;
+                    } else {
                         String p_label = getLabel(posedArray[i - 1]);
                         List<String> tempList = Arrays.asList("AD", "JJ", "VE", "CD");
                         if (tempList.contains(p_label)) {
-                            // VE: 有/没有;CD:一点点
-                            if (lb != i - 1) { //most use of lb
+                            // VE: 有/没有;CD:一点点 -- //most use of lb
+                            if (lb != i - 1) {
                                 phraseList.add(posedArray[i - 1] + currentWord);
                                 lb = i;
                             }
@@ -147,9 +150,6 @@ public class SentiProcess {
                             phraseList.add(currentWord + "-" + (i + 1));
                             lb = i;
                         }
-                    } else {
-                        phraseList.add(posedArray[0] + "-1");
-                        lb = i;
                     }
                 }
 
@@ -157,7 +157,10 @@ public class SentiProcess {
                     if (sentiVV.contains(seger)) {
                         continue;
                     }
-                    if (i > 0) {
+                    if (i == 0) {
+                        phraseList.add(posedArray[0] + "-1");
+                        lb = i;
+                    } else {
                         String p_label = getLabel(posedArray[i - 1]);
                         List<String> tempList = Arrays.asList("AD", "PN");
                         if (tempList.contains(p_label)) {
@@ -167,9 +170,6 @@ public class SentiProcess {
                             phraseList.add(currentWord + "-" + (i + 1));
                             lb = i;
                         }
-                    } else {
-                        phraseList.add(posedArray[0] + "-1");
-                        lb = i;
                     }
                 }
 
@@ -177,7 +177,10 @@ public class SentiProcess {
                     if (sentiAD.contains(seger)) {
                         continue;
                     }
-                    if (i > 0) {
+                    if (i == 0) {
+                        phraseList.add(currentWord + '-' + (i + 1));
+                        lb = i;
+                    } else {
                         String p_label = getLabel(posedArray[i - 1]);
                         if ("AD".equals(p_label)) {
                             int ind = i - 1;
@@ -211,9 +214,6 @@ public class SentiProcess {
                             phraseList.add(currentWord + '-' + (i + 1));
                             lb = i;
                         }
-                    } else {
-                        phraseList.add(currentWord + '-' + (i + 1));
-                        lb = i;
                     }
                 }
 
@@ -264,7 +264,8 @@ public class SentiProcess {
                     try {
                         if ("不#AD会#VV再#AD".equals(posedArray[i - 3] + posedArray[i - 2] + posedArray[i - 1])) {
                             phraseList.add("-4");
-                            lb = i; // add a const
+                            // add a const
+                            lb = i;
                         }
                     } catch (Exception e) {
 
@@ -490,13 +491,13 @@ public class SentiProcess {
                 strength = 0.0;
             }
 
-            LogUtils.logInfo("strength2: " + strength);
+            //LogUtils.logInfo("strength2: " + strength);
             if ("shift".equals(li[0]) && flag) {
                 strength = strength > 0.0 ? strength - Constants.SHIFT_VALUE : strength + Constants.SHIFT_VALUE;
             } else if ("不太".equals(li[0]) && flag) {
                 strength = strength > 0.0 ? strength - Constants.BUTAI_VALUE : strength + Constants.BUTAI_VALUE;
             } else if (advDict.containsKey(li[0])) {
-                LogUtils.logInfo("strength3: " + advDict.get(li[0]) + " * " + strength);
+                //LogUtils.logInfo("strength3: " + advDict.get(li[0]) + " * " + strength);
                 strength *= advDict.get(li[0]);
             }
         } else if (len == 3) {
@@ -507,7 +508,7 @@ public class SentiProcess {
                 strength = 0.0;
             }
             if (advDict.containsKey(li[1])) {
-                LogUtils.logInfo("strength4: " + advDict.get(li[1]) + "*" + strength);
+                //LogUtils.logInfo("strength4: " + advDict.get(li[1]) + "*" + strength);
                 strength *= advDict.get(li[1]);
             }
             List<String> tempList = Arrays.asList("shift", "没", "没有");
@@ -515,7 +516,7 @@ public class SentiProcess {
                 strength = strength > 0.0 ? strength - Constants.SHIFT_VALUE : strength + Constants.SHIFT_VALUE;
             } else {
                 if (advDict.containsKey(li[0])) {
-                    LogUtils.logInfo("strength5: " + advDict.get(li[0]) + " * " + strength);
+                    //LogUtils.logInfo("strength5: " + advDict.get(li[0]) + " * " + strength);
                     strength *= advDict.get(li[0]);
                 }
             }
@@ -528,7 +529,7 @@ public class SentiProcess {
             }
             for (int i = len - 2; i > -1; i--) {
                 if (advDict.containsKey(li[i])) {
-                    LogUtils.logInfo("strength6: " + advDict.get(li[i]) + " * " + strength);
+                    //LogUtils.logInfo("strength6: " + advDict.get(li[i]) + " * " + strength);
                     strength *= advDict.get(li[i]);
                 }
             }
@@ -578,8 +579,8 @@ public class SentiProcess {
     }
 
     /**
-     * 搜索list，找出
-     *
+     * 搜索list，找出和一个词在用一个依存关系的另一个词
+     * 找到一个就返回
      * @param parsedArray
      * @param ty   开头
      * @param ele  包括
@@ -639,7 +640,7 @@ public class SentiProcess {
     }
 
     /**
-     * 找出dobj或nsubj词语
+     * 找出dobj或nsubj中被否定的词语
      *
      * @param parsedArray
      * @param currentWord
@@ -651,27 +652,30 @@ public class SentiProcess {
     public static String doNo(String[] parsedArray, String currentWord, int index,
                               List<String> phraseList, Map<String, Integer> negAndPos) {
         String seger = currentWord.split("#")[0];
+        //直接宾语
         String ele = searchList(parsedArray, "dobj", seger + "-" + (index + 1));
         if (StringUtil.isNullOrBlank(ele)) {
+            //名词主语
             ele = searchList(parsedArray, "nsubj", seger + "-" + (index + 1));
         }
 
-        if (!StringUtil.isNullOrBlank(ele)) {
-            List<String> pair = new ArrayList<>();
-            Matcher m = Pattern.compile(Constants.REGEX_ID.CHINESE).matcher(ele);
-            while (m.find()) {
-                pair.add(m.group());
-            }
-            if (pair.size() == 2) {
-                pair.remove(seger);
-                if (!negAndPos.containsKey(pair.get(0))) {
-                    phraseList.add("没有");
-                    //int lb = i;
-                } else {
-                    // dobj all right; nsubj ?
-                    String el = ele.split("\\,")[1];
-                    return el.substring(0, el.length() - 1);
-                }
+        if (StringUtil.isNullOrBlank(ele)) {
+            return null;
+        }
+        List<String> pair = new ArrayList<>();
+        Matcher m = Pattern.compile(Constants.REGEX_ID.CHINESE).matcher(ele);
+        while (m.find()) {
+            pair.add(m.group());
+        }
+        if (pair.size() == 2) {
+            pair.remove(seger);
+            if (!negAndPos.containsKey(pair.get(0))) {
+                phraseList.add("没有");
+                //int lb = i;
+            } else {
+                // dobj all right; nsubj ?
+                String el = ele.split("\\,")[1];
+                return el.substring(0, el.length() - 1);
             }
         }
         return null;

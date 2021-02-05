@@ -39,8 +39,18 @@ public class LoadFile {
     private static List<String> summary;
     /**有歧义的词语*/
     private static List<String> ambiguity;
+    /**标点符号*/
+    private static List<String> punct;
+    /**表情转换*/
+    private static List<String> emoji;
+    /**不确定词语*/
+    private static List<String> unsure;
 
     static {
+        init();
+    }
+
+    public static void init(){
         negAndPos = loadNegAndPos();
         sentiment = loadSenti(FileUtil.getDataPath(Constants.SENTIMENT_FILE));
         advxxx = loadSenti(FileUtil.getDataPath(Constants.ADV_FILE));
@@ -51,6 +61,9 @@ public class LoadFile {
         sentiAD = FileUtil.file2Set(FileUtil.getDataPath(Constants.SENTIAD_FILE));
         summary = FileUtil.file2List(FileUtil.getDataPath(Constants.SUMMARY_FILE));
         ambiguity = FileUtil.file2List(FileUtil.getDataPath(Constants.AMBIGUITY_FILE));
+        punct = FileUtil.file2List(FileUtil.getDataPath(Constants.PUNCT_FILE));
+        emoji = FileUtil.file2List(FileUtil.getDataPath(Constants.EMOJI_FILE));
+        unsure = FileUtil.file2List(FileUtil.getDataPath(Constants.UNSURE_FILE));
         LogUtils.logInfo("词典加载完毕>>>>>>>>>");
     }
 
@@ -209,5 +222,17 @@ public class LoadFile {
 
     public static Map<String, Double> getAdvxxx() {
         return advxxx;
+    }
+
+    public static List<String> getPunct() {
+        return punct;
+    }
+
+    public static List<String> getEmoji() {
+        return emoji;
+    }
+
+    public static List<String> getUnsure() {
+        return unsure;
     }
 }
