@@ -1,4 +1,4 @@
-package com.tarpan.www.process;
+package com.tarpan.www.pro;
 
 import com.tarpan.www.util.LogUtils;
 import com.tarpan.www.util.StringUtil;
@@ -13,6 +13,32 @@ import java.util.List;
  * @author sekift
  */
 public class Evaluate {
+    /**
+     * 统计得分
+     *
+     * @param phraseNumberSeq
+     * @return
+     */
+    public static double statistics(String phraseNumberSeq) {
+        double strength;
+        double strength1 = Evaluate.findSentiDropPoint(phraseNumberSeq);
+        double strength2 = Evaluate.commonSenti(phraseNumberSeq);
+        if (strength1 * strength2 > 0) {
+            strength = strength2;
+        } else if (strength1 == 0) {
+            strength = strength2;
+        } else if (strength2 == 0) {
+            strength = strength1;
+        } else {
+            if (strength1 > 0 && strength2 < 0) {
+                strength = strength1;
+            } else {
+                strength = strength2;
+            }
+        }
+        return strength;
+    }
+
     /**
      * 找出打分的情况
      *
@@ -128,5 +154,7 @@ public class Evaluate {
         System.out.println(findSentiDropPoint("-1.0"));
         System.out.println(findSentiDropPoint("s|1.8|-5.85|0|s|1.0|0"));
         System.out.println(commonSenti("s|1.8|-5.85|0|s|1.0|0"));
+        String str = "s|1.8|-5.85|0|s|1.0|0";
+        System.out.println(statistics(str));
     }
 }

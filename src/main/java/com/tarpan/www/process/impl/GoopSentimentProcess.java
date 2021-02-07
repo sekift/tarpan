@@ -1,6 +1,8 @@
-package com.tarpan.www.process;
+package com.tarpan.www.process.impl;
 
 import com.tarpan.www.Constants;
+import com.tarpan.www.pre.LoadFile;
+import com.tarpan.www.process.SentimentProcess;
 import com.tarpan.www.util.LogUtils;
 import com.tarpan.www.util.RegexUtil;
 import com.tarpan.www.util.StringUtil;
@@ -14,9 +16,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 情感处理逻辑
+ * @author sekift
+ * @date 2019/02/07 14:00
+ * @desc 旧式的情感处理逻辑
  */
-public class SentiProcess {
+public class GoopSentimentProcess implements SentimentProcess {
 
     public static Set<String> oov = new HashSet<>();
 
@@ -26,24 +30,30 @@ public class SentiProcess {
     /**
      * 寻找短语
      *
-     * @param negAndPos 正负面的词典
-     * @param sentiNN 情感名词
-     * @param sentiVV 情感动词
-     * @param sentiAD 情感副词
-     * @param summary 总结性词语
-     * @param aspect 指示性词语
-     * @param ambiguity 有歧义的词语
      * @param posed 带词性的句子，分词后
      * @param parsed 句法依存关系句子，分词后
      * @return
      */
-    public static List<String> findPhrase(Map<String, Integer> negAndPos, Set<String> sentiNN,
-                                          Set<String> sentiVV, Set<String> sentiAD, List<String> summary,
-                                          Map<String, String> aspect, List<String> ambiguity,
-                                          String posed, String parsed) {
+    @Override
+    public List<String> findPhrase(String posed, String parsed) {
         if (StringUtil.isNullOrBlank(posed.trim())) {
             return Arrays.asList("");
         }
+        //正负面的词典
+        Map<String, Integer> negAndPos = LoadFile.getNegAndPos();
+        //情感名词
+        Set<String> sentiNN = LoadFile.getSentiNN();
+        //情感动词
+        Set<String> sentiVV = LoadFile.getSentiVV();
+        //情感副词
+        Set<String> sentiAD = LoadFile.getSentiAD();
+        //总结性词语
+        List<String> summary = LoadFile.getSummary();
+        //指示性词语
+        Map<String, String> aspect = LoadFile.getAspect();
+        //有歧义的词语
+        List<String> ambiguity = LoadFile.getAmbiguity();
+
         // 用于保存阶段性结果
         List<String> phraseList = new ArrayList<>();
         // 用于保存结果
@@ -53,7 +63,16 @@ public class SentiProcess {
         // 用于保存带有否定的词语，例如“不”时
         List<String> noSenti = new ArrayList<>();
 
+        // 例子：
+        // 设施 还 将 就 , 但 服务 是 相当 的 不 到位 , 休息 了 一 个 晚上 我 白天 出去 ,
+        // 中午 回来 的 时候 居然 房间 都 没有 整理 , 尽管 我 挂 了 要求 整理 房间 的 牌子 .
         String[] posedArray = posed.trim().split(" ");
+
+        // 例子：
+        // 设施#NN 还#AD 将#AD 就#P ,#PU 但#AD 服务#NN 是#VC 相当#AD 的#DEV 不#AD 到位#VV ,#PU
+        // 休息#VV 了#AS 一#CD 个#M 晚上#NT 我#PN 白天#NT 出去#VV ,
+        // #PU 中午#NT 回来#VV 的#DEC 时候#NN 居然#AD 房间#NN 都#AD 没有#VE 整理#VV ,#PU
+        // 尽管#CS 我#PN 挂#VV 了#AS 要求#NN 整理#VV 房间#NN 的#DEC 牌子#NN .#PU
         String[] parsedArray = parsed.trim().split("   ");
         // 下标 lower bound, record the wrote position
         int lb = 0;
@@ -74,17 +93,20 @@ public class SentiProcess {
                     negSenti.add(ret);
                 }
             } else if (negAndPos.containsKey(seger)) {
+                /** 进入到正负面的分析*/
+                // VA - 谓语形容词
                 if ("VA".equals(label)) {
                     if (i == 0) {
                         phraseList.add(posedArray[0] + "-1");
                         lb = i;
                     } else {
-                        String p_label = getLabel(posedArray[i - 1]);
-                        if (("DEV".equals(p_label) || "DEG".equals(p_label))
-                                && i > 1) {
+                        String pLabel = getLabel(posedArray[i - 1]);
+                        // DEV-表示方式状语的“地” DEG-所有格/联结作用“的”
+                        boolean flag = i > 1 && ("DEV".equals(pLabel) || "DEG".equals(pLabel));
+                        if (flag) {
                             phraseList.add(posedArray[i - 2] + posedArray[i - 1] + currentWord);
                             lb = i;
-                        } else if ("AD".equals(p_label)) {
+                        } else if ("AD".equals(pLabel)) {
                             int ind = i - 1;
                             try {
                                 for (int j = i - 2; j > -1; j--) {
@@ -125,8 +147,9 @@ public class SentiProcess {
                     }
                 }
 
+                // NN - 普通名词
                 if ("NN".equals(label)) {
-                    // skip the zero strength noun
+                    // 跳过无情感词语
                     if (sentiNN.contains(seger)) {
                         continue;
                     }
@@ -284,6 +307,8 @@ public class SentiProcess {
             }
         }
 
+        LogUtils.logInfo("phraseList= " + phraseList);
+
         for (String p : phraseList) {
             String p1 = RegexUtil.eregReplace("#\\w{1,3}", p, "");
             if (negSenti.contains(p1)) {
@@ -340,7 +365,8 @@ public class SentiProcess {
         }
     }
 
-    public static List<String> filterPhrase(List<String> phraseList) {
+    @Override
+    public List<String> filterPhrase(List<String> phraseList) {
         Map<String, Integer> dict = LoadFile.getNegAndPos();
         List<String> finalPH = new ArrayList<>();
         for (String line : phraseList) {
@@ -435,20 +461,21 @@ public class SentiProcess {
     }
 
     /**
-     * apply final phrases to calculate number sequences
+     * 应用短语来计算得分
      *
-     * @param sentiDict
-     * @param nonLinear
-     * @param advxxx
      * @param finalPhs
      * @return
      */
-    public static String calAll(Map<String, Double> sentiDict, Map<String, Double> nonLinear, Map<String, Double> advxxx,
-                                List<String> finalPhs) {
+    @Override
+    public String calAll(List<String> finalPhs) {
         StringBuilder sb = new StringBuilder();
         if (null == finalPhs || finalPhs.size() == 0) {
             return "0.0";
         }
+
+        Map<String, Double> sentiDict = LoadFile.getSentiment();
+        Map<String, Double> nonLinear = LoadFile.getNonLinear();
+        Map<String, Double> advxxx = LoadFile.getAdvxxx();
 
         for (String line : finalPhs) {
             if ("SUM".equals(line)) {
@@ -535,32 +562,6 @@ public class SentiProcess {
             }
         }
         strength = ((int) (strength * 100)) / 100.0;
-        return strength;
-    }
-
-    /**
-     * 统计得分
-     *
-     * @param phraseNumberSeq
-     * @return
-     */
-    public static double statistics(String phraseNumberSeq) {
-        double strength;
-        double strength1 = Evaluate.findSentiDropPoint(phraseNumberSeq);
-        double strength2 = Evaluate.commonSenti(phraseNumberSeq);
-        if (strength1 * strength2 > 0) {
-            strength = strength2;
-        } else if (strength1 == 0) {
-            strength = strength2;
-        } else if (strength2 == 0) {
-            strength = strength1;
-        } else {
-            if (strength1 > 0 && strength2 < 0) {
-                strength = strength1;
-            } else {
-                strength = strength2;
-            }
-        }
         return strength;
     }
 

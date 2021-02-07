@@ -1,6 +1,10 @@
-package com.tarpan.www.process;
+package com.tarpan.www;
 
 import com.tarpan.www.nlp.NlpProcess;
+import com.tarpan.www.pre.PreProcess;
+import com.tarpan.www.pro.Evaluate;
+import com.tarpan.www.process.SentimentProcess;
+import com.tarpan.www.process.impl.GoopSentimentProcess;
 import com.tarpan.www.util.StringUtil;
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.io.FileUtils;
@@ -29,7 +33,7 @@ public class Analyse {
         Map<String, String> resultMap = new HashMap<>();
         // 预处理
         line = PreProcess.process(line);
-        // 自然语言处理
+        // 自然语言处理，1-native，2-web
         Map<String, List<String>> nlp = NlpProcess.parser(line, 1);
         if (null == nlp || nlp.size() == 0) {
             return resultMap;
@@ -42,21 +46,19 @@ public class Analyse {
         List<String> seged = nlp.get("seged");
         List<String> posed = nlp.get("posed");
         List<String> parsed = nlp.get("parsed");
+        SentimentProcess sentimentProcess = new GoopSentimentProcess();
         for (int i = 0; i < seged.size(); i++) {
             //LogUtils.logInfo("seged: " + seged + "posed: " + posed + "parsed: " + parsed);
-            List<String> phrases = SentiProcess.findPhrase(LoadFile.getNegAndPos(),
-                    LoadFile.getSentiNN(), LoadFile.getSentiVV(), LoadFile.getSentiAD(), LoadFile.getSummary(),
-                    LoadFile.getAspect(), LoadFile.getAmbiguity(), posed.get(i), parsed.get(i));
+            List<String> phrases = sentimentProcess.findPhrase(posed.get(i), parsed.get(i));
             //LogUtils.logInfo("phrases: " + phrases);
-            List<String> finalPh = SentiProcess.filterPhrase(phrases);
+            List<String> finalPh = sentimentProcess.filterPhrase(phrases);
             //LogUtils.logInfo("finalPh: " + finalPh);
             fph.add(StringUtil.listToString(finalPh, " ,"));
-            String phraseNumberSeqs = SentiProcess.calAll(LoadFile.getSentiment(), LoadFile.getNonLinear(),
-                    LoadFile.getAdvxxx(), finalPh);
+            String phraseNumberSeqs = sentimentProcess.calAll(finalPh);
             seqs.add(phraseNumberSeqs);
         }
 
-        double sentiScore = SentiProcess.statistics(StringUtil.listToString(seqs, "|"));
+        double sentiScore = Evaluate.statistics(StringUtil.listToString(seqs, "|"));
         String segedStr = StringUtil.listToString(seged, " ");
         String posedStr = StringUtil.listToString(posed, " ");
         String parsedStr = StringUtil.listToString(parsed, " ");
@@ -91,9 +93,10 @@ public class Analyse {
     }
 
     public static void main(String args[]) {
+        System.out.println(sentiFly("酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。"));
         //String words = "酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。";
-        parserFromFile("F:\\workspace\\data\\test\\negall.txt",
-                "F:\\workspace\\data\\test\\negall-result.txt");
+//        parserFromFile("F:\\workspace\\data\\test\\negall.txt",
+//                "F:\\workspace\\data\\test\\negall-result.txt");
     }
 
 }
