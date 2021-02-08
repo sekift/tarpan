@@ -20,7 +20,7 @@ import java.util.Set;
 public class LoadFile {
 
     /**引入正负面词典，去掉停用词*/
-    private static Map<String, Integer> negAndPos;
+    private static Map<String, Double> negAndPos;
     /**手工打分的情感词典*/
     private static Map<String, Double> sentiment;
     /**手工打分的副词情感词典，即得分因子*/
@@ -70,8 +70,8 @@ public class LoadFile {
     /**
      * 加载分析词典
      */
-    public static Map<String, Integer> loadNegAndPos() {
-        Map<String, Integer> map = new HashMap<>(10000);
+    public static Map<String, Double> loadNegAndPos() {
+        Map<String, Double> map = new HashMap<>(10000);
         try {
             Set<String> stopwordSet = FileUtil.file2Set(FileUtil.getDataPath(
                     Constants.STOPWORD_FILE));
@@ -82,14 +82,14 @@ public class LoadFile {
             while (negLines.hasNext()) {
                 String lines = negLines.next().trim();
                 if (!StringUtil.isNullOrBlank(lines)) {
-                    map.put(lines, -1);
+                    map.put(lines, -1.0);
                 }
             }
 
             while (posLines.hasNext()) {
                 String lines = posLines.next().trim();
                 if (!StringUtil.isNullOrBlank(lines)) {
-                    map.put(lines, 1);
+                    map.put(lines, 1.0);
                 }
             }
 
@@ -184,7 +184,7 @@ public class LoadFile {
         return dic;
     }
 
-    public static Map<String, Integer> getNegAndPos() {
+    public static Map<String, Double> getNegAndPos() {
         return negAndPos;
     }
 

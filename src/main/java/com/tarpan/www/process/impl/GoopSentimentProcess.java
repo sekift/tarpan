@@ -40,7 +40,7 @@ public class GoopSentimentProcess implements SentimentProcess {
             return Arrays.asList("");
         }
         //正负面的词典
-        Map<String, Integer> negAndPos = LoadFile.getNegAndPos();
+        Map<String, Double> negAndPos = LoadFile.getNegAndPos();
         //情感名词
         Set<String> sentiNN = LoadFile.getSentiNN();
         //情感动词
@@ -64,23 +64,32 @@ public class GoopSentimentProcess implements SentimentProcess {
         List<String> noSenti = new ArrayList<>();
 
         // 例子：
-        // 设施 还 将 就 , 但 服务 是 相当 的 不 到位 , 休息 了 一 个 晚上 我 白天 出去 ,
-        // 中午 回来 的 时候 居然 房间 都 没有 整理 , 尽管 我 挂 了 要求 整理 房间 的 牌子 .
-        String[] posedArray = posed.trim().split(" ");
-
-        // 例子：
         // 设施#NN 还#AD 将#AD 就#P ,#PU 但#AD 服务#NN 是#VC 相当#AD 的#DEV 不#AD 到位#VV ,#PU
         // 休息#VV 了#AS 一#CD 个#M 晚上#NT 我#PN 白天#NT 出去#VV ,
         // #PU 中午#NT 回来#VV 的#DEC 时候#NN 居然#AD 房间#NN 都#AD 没有#VE 整理#VV ,#PU
         // 尽管#CS 我#PN 挂#VV 了#AS 要求#NN 整理#VV 房间#NN 的#DEC 牌子#NN .#PU
+        String[] posedArray = posed.trim().split(" ");
+
+        // 例子：
+        //root(ROOT-0, 休息-14)   nsubj(休息-14, 设施-1)   advmod(休息-14, 还-2)   advmod(休息-14, 将-3)
+        // case(到位-12, 就-4)   punct(到位-12, ,-5)   advmod(到位-12, 但-6)   nsubj(到位-12, 服务-7)
+        // cop(到位-12, 是-8)   dep(到位-12, 相当-9)   mark(相当-9, 的-10)   neg(到位-12, 不-11)
+        // nmod:prep(休息-14, 到位-12)   punct(休息-14, ,-13)   aux:asp(休息-14, 了-15)   nummod(晚上-18, 一-16)
+        // mark:clf(一-16, 个-17)   nmod:topic(出去-21, 晚上-18)   nsubj(出去-21, 我-19)   dep(出去-21, 白天-20)
+        // dep(回来-24, 出去-21)   punct(出去-21, ,-22)   dobj(回来-24, 中午-23)   acl(时候-26, 回来-24)
+        // mark(回来-24, 的-25)   nmod:topic(整理-31, 时候-26)   advmod(房间-28, 居然-27)   nsubj(整理-31, 房间-28)
+        // advmod(整理-31, 都-29)   dep(整理-31, 没有-30)   ccomp(休息-14, 整理-31)   punct(休息-14, ,-32)
+        // advmod(挂-35, 尽管-33)   nsubj(挂-35, 我-34)   conj(休息-14, 挂-35)   aux:asp(挂-35, 了-36)
+        // nsubj(整理-38, 要求-37)   acl(牌子-41, 整理-38)   dobj(整理-38, 房间-39)   mark(整理-38, 的-40)
+        // dobj(挂-35, 牌子-41)   punct(休息-14, .-42)"
         String[] parsedArray = parsed.trim().split("   ");
         // 下标 lower bound, record the wrote position
         int lb = 0;
         for (int i = 0; i < posedArray.length; i++) {
             //System.out.println(i+" : "+list[i]+" : "+yList[i]);
             String currentWord = posedArray[i];
-            String seger = getWord(currentWord);
-            String label = getLabel(currentWord);
+            String seger = StringUtil.getWord(currentWord);
+            String label = StringUtil.getLabel(currentWord);
 
             // 如果是总结性词语
             if (summary.contains(seger)) {
@@ -100,7 +109,7 @@ public class GoopSentimentProcess implements SentimentProcess {
                         phraseList.add(posedArray[0] + "-1");
                         lb = i;
                     } else {
-                        String pLabel = getLabel(posedArray[i - 1]);
+                        String pLabel = StringUtil.getLabel(posedArray[i - 1]);
                         // DEV-表示方式状语的“地” DEG-所有格/联结作用“的”
                         boolean flag = i > 1 && ("DEV".equals(pLabel) || "DEG".equals(pLabel));
                         if (flag) {
@@ -110,7 +119,7 @@ public class GoopSentimentProcess implements SentimentProcess {
                             int ind = i - 1;
                             try {
                                 for (int j = i - 2; j > -1; j--) {
-                                    if ("AD".equals(getLabel(posedArray[j]))) {
+                                    if ("AD".equals(StringUtil.getLabel(posedArray[j]))) {
                                         ind = j;
                                     } else {
                                         break;
@@ -120,8 +129,8 @@ public class GoopSentimentProcess implements SentimentProcess {
                                 LogUtils.logError("out of range.");
                             }
                             if ((ind == (i - 1)) && i > 2) {
-                                if ("VC".equals(getLabel(posedArray[i - 2]))
-                                        && "AD".equals(getLabel(posedArray[i - 3]))) {
+                                if ("VC".equals(StringUtil.getLabel(posedArray[i - 2]))
+                                        && "AD".equals(StringUtil.getLabel(posedArray[i - 3]))) {
                                     phraseList.add(posedArray[i - 3] + posedArray[i - 2] + posedArray[i - 1] + currentWord);
                                     lb = i;
                                 } else {
@@ -158,7 +167,7 @@ public class GoopSentimentProcess implements SentimentProcess {
                         phraseList.add(posedArray[0] + "-1");
                         lb = i;
                     } else {
-                        String p_label = getLabel(posedArray[i - 1]);
+                        String p_label = StringUtil.getLabel(posedArray[i - 1]);
                         List<String> tempList = Arrays.asList("AD", "JJ", "VE", "CD");
                         if (tempList.contains(p_label)) {
                             // VE: 有/没有;CD:一点点 -- //most use of lb
@@ -184,7 +193,7 @@ public class GoopSentimentProcess implements SentimentProcess {
                         phraseList.add(posedArray[0] + "-1");
                         lb = i;
                     } else {
-                        String p_label = getLabel(posedArray[i - 1]);
+                        String p_label = StringUtil.getLabel(posedArray[i - 1]);
                         List<String> tempList = Arrays.asList("AD", "PN");
                         if (tempList.contains(p_label)) {
                             phraseList.add(posedArray[i - 1] + currentWord);
@@ -204,12 +213,12 @@ public class GoopSentimentProcess implements SentimentProcess {
                         phraseList.add(currentWord + '-' + (i + 1));
                         lb = i;
                     } else {
-                        String p_label = getLabel(posedArray[i - 1]);
+                        String p_label = StringUtil.getLabel(posedArray[i - 1]);
                         if ("AD".equals(p_label)) {
                             int ind = i - 1;
                             try {
                                 for (int j = i - 2; j > -1; j--) {
-                                    if ("AD".equals(getLabel(posedArray[j]))) {
+                                    if ("AD".equals(StringUtil.getLabel(posedArray[j]))) {
                                         ind = j;
                                     } else {
                                         break;
@@ -219,8 +228,8 @@ public class GoopSentimentProcess implements SentimentProcess {
 
                             }
                             if ("重".equals(seger)
-                                    && ("再".equals(getWord(posedArray[i - 1]))
-                                    || "往复".equals(getWord(posedArray[i - 1])))) {
+                                    && ("再".equals(StringUtil.getWord(posedArray[i - 1]))
+                                    || "往复".equals(StringUtil.getWord(posedArray[i - 1])))) {
                                 continue;
                             } else {
                                 if (ind <= lb) {
@@ -333,7 +342,7 @@ public class GoopSentimentProcess implements SentimentProcess {
      * @param phraseFile
      */
     public static void findPhrase1(String taggedFile, String phraseFile) {
-        Map<String, Integer> dict = LoadFile.getNegAndPos();
+        Map<String, Double> dict = LoadFile.getNegAndPos();
         try {
             LineIterator lines = FileUtils.lineIterator(new File(taggedFile), Charsets.UTF_8.toString());
             while (lines.hasNext()) {
@@ -351,7 +360,7 @@ public class GoopSentimentProcess implements SentimentProcess {
                     String[] list = line.split(" ");
                     //lowerbound, record the wrote position
                     for (int i = 0; i < list.length; i++) {
-                        String seger = getWord(list[i]);
+                        String seger = StringUtil.getWord(list[i]);
                         if (dict.containsKey(seger)) {
                             FileUtils.writeStringToFile(new File(phraseFile), list[i] + "\n",
                                     Charsets.UTF_8, true);
@@ -367,7 +376,7 @@ public class GoopSentimentProcess implements SentimentProcess {
 
     @Override
     public List<String> filterPhrase(List<String> phraseList) {
-        Map<String, Integer> dict = LoadFile.getNegAndPos();
+        Map<String, Double> dict = LoadFile.getNegAndPos();
         List<String> finalPH = new ArrayList<>();
         for (String line : phraseList) {
             if ("SUM".equals(line)) {
@@ -518,13 +527,13 @@ public class GoopSentimentProcess implements SentimentProcess {
                 strength = 0.0;
             }
 
-            //LogUtils.logInfo("strength2: " + strength);
+            LogUtils.logInfo("strength2: " + strength);
             if ("shift".equals(li[0]) && flag) {
                 strength = strength > 0.0 ? strength - Constants.SHIFT_VALUE : strength + Constants.SHIFT_VALUE;
             } else if ("不太".equals(li[0]) && flag) {
                 strength = strength > 0.0 ? strength - Constants.BUTAI_VALUE : strength + Constants.BUTAI_VALUE;
             } else if (advDict.containsKey(li[0])) {
-                //LogUtils.logInfo("strength3: " + advDict.get(li[0]) + " * " + strength);
+                LogUtils.logInfo("strength3: " + advDict.get(li[0]) + " * " + strength);
                 strength *= advDict.get(li[0]);
             }
         } else if (len == 3) {
@@ -535,7 +544,7 @@ public class GoopSentimentProcess implements SentimentProcess {
                 strength = 0.0;
             }
             if (advDict.containsKey(li[1])) {
-                //LogUtils.logInfo("strength4: " + advDict.get(li[1]) + "*" + strength);
+                LogUtils.logInfo("strength4: " + advDict.get(li[1]) + "*" + strength);
                 strength *= advDict.get(li[1]);
             }
             List<String> tempList = Arrays.asList("shift", "没", "没有");
@@ -543,7 +552,7 @@ public class GoopSentimentProcess implements SentimentProcess {
                 strength = strength > 0.0 ? strength - Constants.SHIFT_VALUE : strength + Constants.SHIFT_VALUE;
             } else {
                 if (advDict.containsKey(li[0])) {
-                    //LogUtils.logInfo("strength5: " + advDict.get(li[0]) + " * " + strength);
+                    LogUtils.logInfo("strength5: " + advDict.get(li[0]) + " * " + strength);
                     strength *= advDict.get(li[0]);
                 }
             }
@@ -556,27 +565,13 @@ public class GoopSentimentProcess implements SentimentProcess {
             }
             for (int i = len - 2; i > -1; i--) {
                 if (advDict.containsKey(li[i])) {
-                    //LogUtils.logInfo("strength6: " + advDict.get(li[i]) + " * " + strength);
+                    LogUtils.logInfo("strength6: " + advDict.get(li[i]) + " * " + strength);
                     strength *= advDict.get(li[i]);
                 }
             }
         }
         strength = ((int) (strength * 100)) / 100.0;
         return strength;
-    }
-
-    /**
-     * 获取分词(AA#BB)的词语
-     */
-    public static String getWord(String str) {
-        return str.substring(0, str.indexOf("#"));
-    }
-
-    /**
-     * 获取分词(AA#BB)的词性
-     */
-    public static String getLabel(String str) {
-        return str.substring(str.indexOf("#") + 1);
     }
 
     /**
@@ -651,7 +646,7 @@ public class GoopSentimentProcess implements SentimentProcess {
      * @return
      */
     public static String doNo(String[] parsedArray, String currentWord, int index,
-                              List<String> phraseList, Map<String, Integer> negAndPos) {
+                              List<String> phraseList, Map<String, Double> negAndPos) {
         String seger = currentWord.split("#")[0];
         //直接宾语
         String ele = searchList(parsedArray, "dobj", seger + "-" + (index + 1));

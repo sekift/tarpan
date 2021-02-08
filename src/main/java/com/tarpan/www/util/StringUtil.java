@@ -12,6 +12,20 @@ import java.util.regex.Pattern;
  * 
  */
 public class StringUtil {
+
+	/**
+	 * 获取分词(AA#BB)的词语
+	 */
+	public static String getWord(String str) {
+		return str.substring(0, str.indexOf("#"));
+	}
+
+	/**
+	 * 获取分词(AA#BB)的词性
+	 */
+	public static String getLabel(String str) {
+		return str.substring(str.indexOf("#") + 1);
+	}
 	
 	/**
 	 * 当 text 不为 null 且长度不为 0

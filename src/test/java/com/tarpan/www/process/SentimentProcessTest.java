@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SentimentProcessTest {
     String str = "文字#NN";
-    Map<String, Integer> dict = LoadFile.getNegAndPos();
+    Map<String, Double> dict = LoadFile.getNegAndPos();
 
     @Test
     public void sentimentLoadTest(){
@@ -56,11 +56,11 @@ public class SentimentProcessTest {
 
     @Test
     public void getWordTest(){
-        assertTrue(GoopSentimentProcess.getWord(str).equals("文字"));
+        assertTrue(StringUtil.getWord(str).equals("文字"));
     }
 
     @Test
     public void getLabelTest(){
-        assertTrue(GoopSentimentProcess.getLabel(str).equals("NN"));
+        assertTrue(StringUtil.getLabel(str).equals("NN"));
     }
 }

@@ -123,6 +123,10 @@ public class Check {
 		LogUtils.logInfo(dict.size()+"");
     }
 
+	/**
+	 * 未登录词的记录 - out-of vocabulary
+	 * @param oov
+	 */
 	public static void recordOOV(String[] oov) {
 		try {
 			for (String str : oov) {
