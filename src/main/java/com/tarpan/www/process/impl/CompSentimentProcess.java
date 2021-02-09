@@ -5,6 +5,7 @@ import com.tarpan.www.process.SentimentProcess;
 import com.tarpan.www.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -42,8 +43,17 @@ public class CompSentimentProcess implements SentimentProcess {
      */
     @Override
     public List<String> findPhrase(String posedStr, String parsedStr) {
-        //1 将-符号换成&
-
+        // 重新定义结构，结果为：
+        /**
+         * [{root={0=ROOT, 3=差}}, {nsubj={1=酒店, 3=差}}, {advmod={2=实在, 3=差}}, {punct={4=，, 3=差}}, {nsubj={5=房间, 7=小}},
+         * {advmod={6=又, 7=小}}, {conj={3=差, 7=小}}, {advmod={8=又, 9=脏}}, {conj={9=脏, 7=小}}, {punct={10=，, 3=差}},
+         * {compound:nn={12=环境, 11=卫生间}}, {nsubj={12=环境, 14=差}}, {advmod={13=太, 14=差}}, {conj={14=差, 3=差}},
+         * {punct={3=差, 15=，}}, {det={16=整, 18=酒店}}, {mark:clf={16=整, 17=个}}, {nsubj={20=像, 18=酒店}},
+         * {advmod={20=像, 19=有点}},{conj={20=像, 3=差}}, {nmod={24=招待所, 21=马路}}, {case={21=马路, 22=边上}},
+         * {case={21=马路, 23=的}}, {dobj={20=像, 24=招待所}}, {punct={25=。, 3=差}}]
+         */
+        List<Map<String, Map<Integer, String>>> parsedMapList = redefineStructure(posedStr, parsedStr);
+        System.out.println("parsedMapList= " + parsedMapList);
 
         //1 将posed与parsed合并，含打分
         //输出：
@@ -77,6 +87,62 @@ public class CompSentimentProcess implements SentimentProcess {
 
 
         return null;
+    }
+
+    /**
+     * 重新定义parsed结果的结构，包含词性和得分
+     *
+     * @param parsedStr
+     * @return
+     */
+    private List<Map<String, Map<Integer, String>>> redefineStructure(String posedStr, String parsedStr) {
+        List<Map<String, Map<Integer, String>>> parsedMapList = new ArrayList<>();
+        String[] parsedArray = parsedStr.trim().split("   ");
+        for (int i = 0; i < parsedArray.length; i++) {
+            Map<String, Map<Integer, String>> outMap = new HashMap<>(2);
+            // root(ROOT-0, 差-3)
+            String[] outMapArray = parsedArray[i].split("\\(");
+            String outMapKey = outMapArray[0];
+            String outMapValueStr = outMapArray[1].replace(")", "");
+            String[] outMapValueArray = outMapValueStr.split(", ");
+            Map<Integer, String> inMap = new HashMap<>(2);
+            String[] firstMapArray = outMapValueArray[0].split("-");
+            String[] secondMapArray = outMapValueArray[1].split("-");
+            Integer firstMapKey = Integer.valueOf(firstMapArray[1]);
+            Integer secondMapKey = Integer.valueOf(secondMapArray[1]);
+
+            String firstMapWord = firstMapArray[0];
+            String secondMapWord = secondMapArray[0];
+            String firstMapValue = parsedNameMerge(posedStr, firstMapWord, firstMapKey);
+            String secondMapValue = parsedNameMerge(posedStr, secondMapWord, secondMapKey);
+
+            inMap.put(firstMapKey, firstMapValue);
+            inMap.put(secondMapKey, secondMapValue);
+            outMap.put(outMapKey, inMap);
+            parsedMapList.add(outMap);
+        }
+        return parsedMapList;
+    }
+
+    /**
+     * 合并词性并打分
+     *
+     * @param posedStr
+     * @param item
+     * @param index
+     * @return
+     */
+    private String parsedNameMerge(String posedStr, String item, Integer index) {
+        String[] posedArray = posedStr.trim().split(" ");
+        if (index == 0) {
+            return item + "#ROOT";
+        }
+        String posedName = posedArray[index - 1];
+        String posedNameWord = StringUtil.getWord(posedName);
+        String name = item.replace(posedNameWord, posedName);
+        Double score = wordScore(posedNameWord);
+        name = name + "&" + score;
+        return name;
     }
 
     /**
@@ -119,8 +185,8 @@ public class CompSentimentProcess implements SentimentProcess {
             String[] parsedItemArray = parsedArray[i].split(", ");
             String parsedItemElementFirst = parsedItemArray[0];
             String parsedItemElementSecond = parsedItemArray[1];
-            String firstName = parsedNameMerge(posedArray, parsedItemElementFirst);
-            String secondName = parsedNameMerge(posedArray, parsedItemElementSecond);
+            String firstName = parsedNameMerge1(posedArray, parsedItemElementFirst);
+            String secondName = parsedNameMerge1(posedArray, parsedItemElementSecond);
             list.add(firstName + ", " + secondName + ")");
         }
 
@@ -134,7 +200,7 @@ public class CompSentimentProcess implements SentimentProcess {
      * @param item
      * @return
      */
-    private String parsedNameMerge(String[] posedArray, String item) {
+    private String parsedNameMerge1(String[] posedArray, String item) {
         String[] parsedItemElementArray = item.split("-");
         String parsedItemElementName = parsedItemElementArray[0];
         String parsedItemElementIndex = parsedItemElementArray[1].replace(")", "");
@@ -146,7 +212,7 @@ public class CompSentimentProcess implements SentimentProcess {
         String posedNameWord = StringUtil.getWord(posedName);
         String name = parsedItemElementName.replace(posedNameWord, posedName);
         Double score = wordScore(posedNameWord);
-        name = name + "[" + score + "]" + "-" + index;
+        name = name + "&" + score;
         return name;
     }
 
