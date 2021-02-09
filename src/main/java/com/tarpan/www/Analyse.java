@@ -4,7 +4,9 @@ import com.tarpan.www.nlp.NlpProcess;
 import com.tarpan.www.pre.PreProcess;
 import com.tarpan.www.pro.Evaluate;
 import com.tarpan.www.process.SentimentProcess;
+import com.tarpan.www.process.impl.CompSentimentProcess;
 import com.tarpan.www.process.impl.GoopSentimentProcess;
+import com.tarpan.www.util.LogUtils;
 import com.tarpan.www.util.StringUtil;
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.io.FileUtils;
@@ -35,6 +37,7 @@ public class Analyse {
         line = PreProcess.process(line);
         // 自然语言处理，1-native，2-web
         Map<String, List<String>> nlp = NlpProcess.parser(line, 1);
+        System.out.println(nlp);
         if (null == nlp || nlp.size() == 0) {
             return resultMap;
         }
@@ -48,7 +51,6 @@ public class Analyse {
         List<String> parsed = nlp.get("parsed");
         SentimentProcess sentimentProcess = new GoopSentimentProcess();
         for (int i = 0; i < seged.size(); i++) {
-            //LogUtils.logInfo("seged: " + seged + "posed: " + posed + "parsed: " + parsed);
             List<String> phrases = sentimentProcess.findPhrase(posed.get(i), parsed.get(i));
             //LogUtils.logInfo("phrases: " + phrases);
             List<String> finalPh = sentimentProcess.filterPhrase(phrases);
@@ -93,7 +95,7 @@ public class Analyse {
     }
 
     public static void main(String args[]) {
-        System.out.println(sentiFly("设施还将就,但服务是相当的不到位,休息了一个晚上我白天出去,中午回来的时候居然房间都没有整理,尽管我挂了要求整理房间的牌子."));
+        System.out.println(sentiFly("这个网站的评价真是越来越不可信了，搞不懂为什么这么多好评。真的是很一般，不要迷信什么哪里回来的大厨吧。环境和出品若是当作普通茶餐厅来看待就还说得过去，但是价格又不是茶餐厅的价格，这就很尴尬了。。服务也是有待提高。"));
         //String words = "酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。";
         //设施还将就,但服务是相当的不到位,休息了一个晚上我白天出去,中午回来的时候居然房间都没有整理,尽管我挂了要求整理房间的牌子.
 //        parserFromFile("F:\\workspace\\data\\test\\negall.txt",

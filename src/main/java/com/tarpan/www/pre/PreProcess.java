@@ -33,10 +33,10 @@ public class PreProcess {
         try {
             // 中文繁转简
             input = LanguageUtil.convertToGB2(input);
-            // 将标点符号全部替换为空格，方便分词
-            for(String punct : punctList){
-                input = input.replace(punct, " ");
-            }
+            // 将某些标点符号替换，方便分词
+//            for(String punct : punctList){
+//                input = input.replace(punct, " ");
+//            }
 
             // TODO 是否作不确定词性过滤
             // TODO 是否作一些分词有问题的进行替换

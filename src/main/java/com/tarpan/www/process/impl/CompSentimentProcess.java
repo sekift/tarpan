@@ -67,26 +67,29 @@ public class CompSentimentProcess implements SentimentProcess {
         List<String> filterPuList = filterPuValue(filterScoreList);
         System.out.println(filterPuList);
 
+
         return null;
     }
 
     /**
      * 过滤标点符号和root的值
+     *
      * @param filterScoreList
      * @return
      */
-    private List<String> filterPuValue(List<String> filterScoreList){
-        Predicate<String> predicate = merge -> !merge.contains("#PU")&&!merge.contains("#ROOT");
+    private List<String> filterPuValue(List<String> filterScoreList) {
+        Predicate<String> predicate = merge -> !merge.contains("#PU") && !merge.contains("#ROOT");
         List<String> list = filterScoreList.stream().filter(predicate).collect(Collectors.toList());
         return list;
     }
 
-        /**
-         * 过滤两项得分都是0.0的值
-         * @param mergeList
-         * @return
-         */
-    private List<String> filterZeroScore(List<String> mergeList){
+    /**
+     * 过滤两项得分都是0.0的值
+     *
+     * @param mergeList
+     * @return
+     */
+    private List<String> filterZeroScore(List<String> mergeList) {
         Predicate<String> predicate = merge -> !merge.split(", ")[0].contains("[0.0]")
                 || !merge.split(", ")[1].contains("[0.0]");
         List<String> list = mergeList.stream().filter(predicate).collect(Collectors.toList());

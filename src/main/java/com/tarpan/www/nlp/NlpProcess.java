@@ -75,21 +75,21 @@ public class NlpProcess {
      * @param text
      * @return
      */
-    public static Map<String, String> parseFromNative(String text) {
+    public static Map<String, List<String>> parseFromNative(String text) {
         Map<String, String> params = new HashMap<>(2);
-        Map<String, String> resultMap = null;
+        Map<String, List<String>> resultMap = null;
         try {
             params.put("input", URLEncoder.encode(text, "UTF-8"));
             String response = HttpUtil.post(NATIVE_URL, params, 10 * 3600, 10 * 3600, "utf-8");
             resultMap = JSONObject.parseObject(response, Map.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return resultMap;
     }
 
     public static void main(String args[]) {
-        System.out.println(parseFromNative("酒店实在差 房间又小又脏 卫生间环境太差 整个酒店有点像马路边上的招待所 "));
+        System.out.println(parseFromNative("酒店实在差 房间又小又脏.卫生间环境太差 整个酒店有点像马路边上的招待所 "));
     }
 
     /**
@@ -110,30 +110,28 @@ public class NlpProcess {
      */
     public static Map<String, List<String>> parser(String text, int type) {
         Map<String, String> result;
-        switch (type) {
-            case 1:
-                result = parseFromNative(text);
-                break;
-            case 2:
-                result = parseFromWeb(text);
-                break;
-            default:
-                result = parseExample(text);
+        if (1 == type) {
+            return parseFromNative(text);
+        } else if (2 == type) {
+            result = parseFromWeb(text);
+        } else {
+            result = parseExample(text);
         }
         Map<String, List<String>> map = new HashMap<>(4);
         if (result == null || result.size() == 0) {
             return map;
         }
-        List<String> seList = new ArrayList<>(2);
-        List<String> poList = new ArrayList<>(2);
-        List<String> paList = new ArrayList<>(2);
-
-        seList.add(result.get("seged"));
-        poList.add(result.get("posed"));
-        paList.add(result.get("parsed"));
-        map.put("seged", seList);
-        map.put("posed", poList);
-        map.put("parsed", paList);
+        if (1 != type) {
+            List<String> seList = new ArrayList<>(2);
+            List<String> poList = new ArrayList<>(2);
+            List<String> paList = new ArrayList<>(2);
+            seList.add(result.get("seged"));
+            poList.add(result.get("posed"));
+            paList.add(result.get("parsed"));
+            map.put("seged", seList);
+            map.put("posed", poList);
+            map.put("parsed", paList);
+        }
         return map;
     }
 }
