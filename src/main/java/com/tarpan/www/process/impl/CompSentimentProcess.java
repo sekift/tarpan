@@ -22,50 +22,58 @@ public class CompSentimentProcess implements SentimentProcess {
     private Map<String, Double> advxxx = LoadFile.getAdvxxx();
 
     public static void main(String[] args) {
-        String posedStr = "设施#NN 还#AD 将#AD 就#P ,#PU 但#AD 服务#NN 是#VC 相当#AD 的#DEV 不#AD 到位#VV ,#PU 休息#VV 了#AS 一#CD 个#M 晚上#NT 我#PN 白天#NT 出去#VV ,#PU 中午#NT 回来#VV 的#DEC 时候#NN 居然#AD 房间#NN 都#AD 没有#VE 整理#VV ,#PU 尽管#CS 我#PN 挂#VV 了#AS 要求#NN 整理#VV 房间#NN 的#DEC 牌子#NN .#PU";
-        String parsedStr = "root(ROOT-0, 休息-14)   nsubj(休息-14, 设施-1)   advmod(休息-14, 还-2)   advmod(休息-14, 将-3)   case(到位-12, 就-4)   punct(到位-12, ,-5)   advmod(到位-12, 但-6)   nsubj(到位-12, 服务-7)   cop(到位-12, 是-8)   dep(到位-12, 相当-9)   mark(相当-9, 的-10)   neg(到位-12, 不-11)   nmod:prep(休息-14, 到位-12)   punct(休息-14, ,-13)   aux:asp(休息-14, 了-15)   nummod(晚上-18, 一-16)   mark:clf(一-16, 个-17)   nmod:topic(出去-21, 晚上-18)   nsubj(出去-21, 我-19)   dep(出去-21, 白天-20)   dep(回来-24, 出去-21)   punct(出去-21, ,-22)   dobj(回来-24, 中午-23)   acl(时候-26, 回来-24)   mark(回来-24, 的-25)   nmod:topic(整理-31, 时候-26)   advmod(房间-28, 居然-27)   nsubj(整理-31, 房间-28)   advmod(整理-31, 都-29)   dep(整理-31, 没有-30)   ccomp(休息-14, 整理-31)   punct(休息-14, ,-32)   advmod(挂-35, 尽管-33)   nsubj(挂-35, 我-34)   conj(休息-14, 挂-35)   aux:asp(挂-35, 了-36)   nsubj(整理-38, 要求-37)   acl(牌子-41, 整理-38)   dobj(整理-38, 房间-39)   mark(整理-38, 的-40)   dobj(挂-35, 牌子-41)   punct(休息-14, .-42)";
+        String posedStr = "酒店#NN 实在#AD 差#VA ，#PU 房间#NN 又#AD 小#VA 又#AD 脏#VA ，#PU 卫生间#NN 环境#NN 太#AD 差#VA ，#PU 整#DT 个#M 酒店#NN 有点#AD 像#VV 马路#NN 边上#LC 的#DEG 招待所#NN 。#PU";
+        String parsedStr = "root(ROOT-0, 差-3)   nsubj(差-3, 酒店-1)   advmod(差-3, 实在-2)   punct(差-3, ，-4)   nsubj(小-7, 房间-5)   advmod(小-7, 又-6)   conj(差-3, 小-7)   advmod(脏-9, 又-8)   conj(小-7, 脏-9)   punct(差-3, ，-10)   compound:nn(环境-12, 卫生间-11)   nsubj(差-14, 环境-12)   advmod(差-14, 太-13)   conj(差-3, 差-14)   punct(差-3, ，-15)   det(酒店-18, 整-16)   mark:clf(整-16, 个-17)   nsubj(像-20, 酒店-18)   advmod(像-20, 有点-19)   conj(差-3, 像-20)   nmod(招待所-24, 马路-21)   case(马路-21, 边上-22)   case(马路-21, 的-23)   dobj(像-20, 招待所-24)   punct(差-3, 。-25)";
         SentimentProcess process = new CompSentimentProcess();
         process.findPhrase(posedStr, parsedStr);
 
     }
 
     /**
-     * @param posedStr  ： 酒店#NN 实在#AD 差#VV 房间#NN 又#AD 小#VA 又#AD 脏#VA 卫生间#NN 环境#NN 太#AD 差#VV 整#DT 个#M 酒店#NN
-     *                  * 有点#AD 像#VV 马路#NN 边上#LC 的#DEG 招待所#NN
-     * @param parsedStr ： root(ROOT-0, 差-3)   nsubj(差-3, 酒店-1)   advmod(差-3, 实在-2)   dobj(差-3, 房间-4)
-     *                  advmod(小-6, 又-5)   conj(差-3, 小-6)   advmod(脏-8, 又-7)   conj(小-6, 脏-8)
-     *                  compound:nn(环境-10, 卫生间-9)   dobj(脏-8, 环境-10)   advmod(差-12, 太-11)   conj(差-3, 差-12)
-     *                  det(酒店-15, 整-13)   mark:clf(整-13, 个-14)   dobj(差-12, 酒店-15)   advmod(像-17, 有点-16)
-     *                  conj(差-12, 像-17)   nmod(招待所-21, 马路-18)   case(马路-18, 边上-19)   case(马路-18, 的-20)
-     *                  dobj(像-17, 招待所-21)
+     * @param posedStr  ： 酒店#NN 实在#AD 差#VA ，#PU 房间#NN 又#AD 小#VA 又#AD 脏#VA ，#PU 卫生间#NN 环境#NN 太#AD 差#VA ，#PU
+     *                  整#DT 个#M 酒店#NN 有点#AD 像#VV 马路#NN 边上#LC 的#DEG 招待所#NN 。#PU
+     * @param parsedStr ： root(ROOT-0, 差-3)   nsubj(差-3, 酒店-1)   advmod(差-3, 实在-2)   punct(差-3, ，-4)   nsubj(小-7, 房间-5)
+     *                  advmod(小-7, 又-6)   conj(差-3, 小-7)   advmod(脏-9, 又-8)   conj(小-7, 脏-9)   punct(差-3, ，-10)
+     *                  compound:nn(环境-12, 卫生间-11)   nsubj(差-14, 环境-12)   advmod(差-14, 太-13)   conj(差-3, 差-14)
+     *                  punct(差-3, ，-15)   det(酒店-18, 整-16)   mark:clf(整-16, 个-17)   nsubj(像-20, 酒店-18)
+     *                  advmod(像-20, 有点-19)   conj(差-3, 像-20)   nmod(招待所-24, 马路-21)   case(马路-21, 边上-22)
+     *                  case(马路-21, 的-23)   dobj(像-20, 招待所-24)   punct(差-3, 。-25)
      * @return
      */
     @Override
     public List<String> findPhrase(String posedStr, String parsedStr) {
+        //1 将-符号换成&
+
+
         //1 将posed与parsed合并，含打分
         //输出：
-        // root(ROOT#ROOT-0, 差#VA[-3.0]-3)   nsubj(差#VA[-3.0]-3, 酒店#NN[0.0]-1)   advmod(差#VA[-3.0]-3, 实在#AD[1.1]-2)
-        // punct(差#VA[-3.0]-3, ，#PU[0.0]-4)   nsubj(小#VA[-2.5]-7, 房间#NN[0.0]-5)   advmod(小#VA[-2.5]-7, 又#AD[0.0]-6)
-        // conj(差#VA[-3.0]-3, 小#VA[-2.5]-7)   advmod(脏#VA[-3.0]-9, 又#AD[0.0]-8)   conj(小#VA[-2.5]-7, 脏#VA[-3.0]-9)
-        // punct(差#VA[-3.0]-3, ，#PU[0.0]-10)   compound:nn(环境#NN[0.0]-12, 卫生间#NN[0.0]-11)
-        // nsubj(差#VA[-3.0]-14, 环境#NN[0.0]-12)   advmod(差#VA[-3.0]-14, 太#AD[1.3]-13)   conj(差#VA[-3.0]-3, 差#VA[-3.0]-14)
-        // punct(差#VA[-3.0]-3, ，#PU[0.0]-15)   det(酒店#NN[0.0]-18, 整#DT[0.0]-16)   mark:clf(整#DT[0.0]-16, 个#M[0.0]-17)
-        // nsubj(像#VV[0.0]-20, 酒店#NN[0.0]-18)   advmod(像#VV[0.0]-20, 有点#AD[0.3]-19)   conj(差#VA[-3.0]-3, 像#VV[0.0]-20)
-        // nmod(招待所#NN[0.0]-24, 马路#NN[0.0]-21)   case(马路#NN[0.0]-21, 边上#LC[0.0]-22)
-        // case(马路#NN[0.0]-21, 的#DEG[0.0]-23)   dobj(像#VV[0.0]-20, 招待所#NN[0.0]-24)   punct(差#VA[-3.0]-3, 。#PU[0.0]-25)
+        /**
+         * [root(ROOT#ROOT-0, 差#VA[-3.0]-3), nsubj(差#VA[-3.0]-3, 酒店#NN[0.0]-1), advmod(差#VA[-3.0]-3, 实在#AD[1.1]-2),
+         * punct(差#VA[-3.0]-3, ，#PU[0.0]-4), nsubj(小#VA[-2.5]-7, 房间#NN[0.0]-5), advmod(小#VA[-2.5]-7, 又#AD[0.0]-6),
+         * conj(差#VA[-3.0]-3, 小#VA[-2.5]-7), advmod(脏#VA[-3.0]-9, 又#AD[0.0]-8), conj(小#VA[-2.5]-7, 脏#VA[-3.0]-9),
+         * punct(差#VA[-3.0]-3, ，#PU[0.0]-10), compound:nn(环境#NN[0.0]-12, 卫生间#NN[0.0]-11), nsubj(差#VA[-3.0]-14,
+         * 环境#NN[0.0]-12), advmod(差#VA[-3.0]-14, 太#AD[1.3]-13), conj(差#VA[-3.0]-3, 差#VA[-3.0]-14), punct(差#VA[-3.0]-3, ，#PU[0.0]-15),
+         * det(酒店#NN[0.0]-18, 整#DT[0.0]-16), mark:clf(整#DT[0.0]-16, 个#M[0.0]-17), nsubj(像#VV[0.0]-20, 酒店#NN[0.0]-18),
+         * advmod(像#VV[0.0]-20, 有点#AD[0.3]-19), conj(差#VA[-3.0]-3, 像#VV[0.0]-20), nmod(招待所#NN[0.0]-24, 马路#NN[0.0]-21),
+         * case(马路#NN[0.0]-21, 边上#LC[0.0]-22), case(马路#NN[0.0]-21, 的#DEG[0.0]-23), dobj(像#VV[0.0]-20, 招待所#NN[0.0]-24),
+         * punct(差#VA[-3.0]-3, 。#PU[0.0]-25)]
+         */
         List<String> mergeList = mergePosedAndParsed(posedStr, parsedStr);
         System.out.println(mergeList);
-        //2 过滤两项得分都是0.0和root的值
+        //2 过滤两项得分都是0.0的值
         List<String> filterScoreList = filterZeroScore(mergeList);
         System.out.println(filterScoreList);
         //3 过滤标点符号和root的值
         //剩下：
-        // nsubj(差#VA[-3.0]-3, 酒店#NN[0.0]-1)   advmod(差#VA[-3.0]-3, 实在#AD[1.1]-2) nsubj(小#VA[-2.5]-7, 房间#NN[0.0]-5)
-        // advmod(小#VA[-2.5]-7, 又#AD[0.0]-6)    conj(差#VA[-3.0]-3, 小#VA[-2.5]-7)    advmod(脏#VA[-3.0]-9, 又#AD[0.0]-8)
-        // conj(小#VA[-2.5]-7, 脏#VA[-3.0]-9)    nsubj(差#VA[-3.0]-14, 环境#NN[0.0]-12)    advmod(差#VA[-3.0]-14, 太#AD[1.3]-13)
-        // conj(差#VA[-3.0]-3, 差#VA[-3.0]-14)    advmod(像#VV[0.0]-20, 有点#AD[0.3]-19)    conj(差#VA[-3.0]-3, 像#VV[0.0]-20)
+        /**
+         * [nsubj(差#VA[-3.0]-3, 酒店#NN[0.0]-1), advmod(差#VA[-3.0]-3, 实在#AD[1.1]-2), nsubj(小#VA[-2.5]-7, 房间#NN[0.0]-5),
+         * advmod(小#VA[-2.5]-7, 又#AD[0.0]-6), conj(差#VA[-3.0]-3, 小#VA[-2.5]-7), advmod(脏#VA[-3.0]-9, 又#AD[0.0]-8),
+         * conj(小#VA[-2.5]-7, 脏#VA[-3.0]-9), nsubj(差#VA[-3.0]-14, 环境#NN[0.0]-12), advmod(差#VA[-3.0]-14, 太#AD[1.3]-13),
+         * conj(差#VA[-3.0]-3, 差#VA[-3.0]-14), advmod(像#VV[0.0]-20, 有点#AD[0.3]-19), conj(差#VA[-3.0]-3, 像#VV[0.0]-20)]
+         */
         List<String> filterPuList = filterPuValue(filterScoreList);
         System.out.println(filterPuList);
+        // 重新组织词组
 
 
         return null;

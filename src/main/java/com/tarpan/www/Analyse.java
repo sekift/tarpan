@@ -95,9 +95,9 @@ public class Analyse {
     }
 
     public static void main(String args[]) {
-        System.out.println(sentiFly("这个网站的评价真是越来越不可信了，搞不懂为什么这么多好评。真的是很一般，不要迷信什么哪里回来的大厨吧。环境和出品若是当作普通茶餐厅来看待就还说得过去，但是价格又不是茶餐厅的价格，这就很尴尬了。。服务也是有待提高。"));
+        System.out.println(sentiFly("酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。"));
         //String words = "酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。";
-        //设施还将就,但服务是相当的不到位,休息了一个晚上我白天出去,中午回来的时候居然房间都没有整理,尽管我挂了要求整理房间的牌子.
+        //设施还将就,但服务是相当的不到位。休息了一个晚上我白天出去,中午回来的时候居然房间都没有整理。尽管我挂了要求整理房间的牌子.
 //        parserFromFile("F:\\workspace\\data\\test\\negall.txt",
 //                "F:\\workspace\\data\\test\\negall-result.txt");
     }
