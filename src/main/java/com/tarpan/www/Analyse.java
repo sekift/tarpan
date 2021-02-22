@@ -49,12 +49,12 @@ public class Analyse {
         List<String> seged = nlp.get("seged");
         List<String> posed = nlp.get("posed");
         List<String> parsed = nlp.get("parsed");
-        SentimentProcess sentimentProcess = new GoopSentimentProcess();
+        SentimentProcess sentimentProcess = new CompSentimentProcess();
         for (int i = 0; i < seged.size(); i++) {
             List<String> phrases = sentimentProcess.findPhrase(posed.get(i), parsed.get(i));
             //LogUtils.logInfo("phrases: " + phrases);
             List<String> finalPh = sentimentProcess.filterPhrase(phrases);
-            //LogUtils.logInfo("finalPh: " + finalPh);
+            LogUtils.logInfo("finalPh: " + finalPh);
             fph.add(StringUtil.listToString(finalPh, " ,"));
             String phraseNumberSeqs = sentimentProcess.calAll(finalPh);
             seqs.add(phraseNumberSeqs);
@@ -95,7 +95,7 @@ public class Analyse {
     }
 
     public static void main(String args[]) {
-        System.out.println(sentiFly("酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。"));
+        System.out.println(sentiFly("房间的设施还算过得去～但是我遇到的最差的酒店服务就是这家酒店了，特别是前台服务简直让人恶心"));
         //String words = "酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。";
         //设施还将就,但服务是相当的不到位。休息了一个晚上我白天出去,中午回来的时候居然房间都没有整理。尽管我挂了要求整理房间的牌子.
 //        parserFromFile("F:\\workspace\\data\\test\\negall.txt",

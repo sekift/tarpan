@@ -14,6 +14,40 @@ import java.util.regex.Pattern;
 public class StringUtil {
 
 	/**
+	 * 获取全部值
+	 * @param str
+	 * @param idx
+	 * @return
+	 */
+	public static String getValue(String str, Integer idx){
+		String result = "";
+		str = str.split("%")[1];
+		if(idx == 1){
+			result = str.split("&")[0];
+		}else if(idx == 2){
+			result = str.split("&")[1];
+		}
+		return result;
+	}
+	/**
+	 * 获取依存关系的索引
+	 * @param str 字符串
+	 * @param idx 第几个索引，1-前面一个，2-后面一个
+	 * @return
+	 */
+	public static Integer getIndex(String str, Integer idx){
+		String result = "";
+		str = str.split("%")[1];
+		if(idx == 1){
+			result = str.split("&")[0].split("#")[0];
+		}else if(idx == 2){
+			result = str.split("&")[1].split("#")[0];
+		}
+		return Integer.parseInt(result);
+	}
+
+
+	/**
 	 * 获取分词(AA#BB)的词语
 	 */
 	public static String getWord(String str) {
@@ -50,7 +84,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * 取得hash值，可能返回负数 备注:使用{@link HashAlgorithmUtil}.getDJBHash代替此方法
+	 * 取得hash值，可能返回负数
 	 * 
 	 * @param str
 	 * @return
@@ -66,9 +100,7 @@ public class StringUtil {
 
 	/**
 	 * 字符串编码函数。
-	 * 
 	 * @param str
-	 * @param srcCode
 	 * @param targetCode
 	 * @return
 	 */

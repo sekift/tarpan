@@ -35,7 +35,7 @@ public class PreProcess {
             input = LanguageUtil.convertToGB2(input);
             // 去掉特殊字符，方便分词
             for(String punct : punctList){
-                input = input.replace(punct, " ");
+                input = input.replace(punct, ",");
             }
 
             // TODO 是否作不确定词性过滤

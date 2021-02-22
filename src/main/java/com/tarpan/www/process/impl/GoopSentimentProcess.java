@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 /**
  * @author sekift
  * @date 2019/02/07 14:00
- * @desc 旧式的情感处理逻辑
+ * @desc 7年前开发的情感处理逻辑
  */
 public class GoopSentimentProcess implements SentimentProcess {
 

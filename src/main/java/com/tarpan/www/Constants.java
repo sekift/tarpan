@@ -29,8 +29,14 @@ public class Constants {
 	public static final String PUNCT_FILE = PRE + "punct" + PRO;
 	
 
-	// 分割符号
+	/** 分割符号*/
 	public static final String EQUAL_SEP = "====";
+	//依存关系分割符号
+	public static final String DEPE_SEP = "%";
+	//依存关系两词语间分割符号
+	public static final String TWO_WORD_SEP = "&";
+	//词语与词性分割符号
+	public static final String WORD_SEG_SEP = "#";
 	
 	// shift 情感的分值
 	public static final double SHIFT_VALUE = 4.0;
