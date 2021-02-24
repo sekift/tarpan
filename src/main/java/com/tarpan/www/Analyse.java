@@ -31,7 +31,7 @@ public class Analyse {
      *
      * @param line
      */
-    public static Map<String, String> sentiFly(String line) {
+    public static Map<String, String> sentiFly(SentimentProcess sentimentProcess,String line) {
         // 返回的map
         Map<String, String> resultMap = new HashMap<>();
         // 预处理
@@ -50,7 +50,6 @@ public class Analyse {
         List<String> seged = nlp.get("seged");
         List<String> posed = nlp.get("posed");
         List<String> parsed = nlp.get("parsed");
-        SentimentProcess sentimentProcess = new CompSentimentProcess();
         for (int i = 0; i < seged.size(); i++) {
             List<String> phrases = sentimentProcess.findPhrase(posed.get(i), parsed.get(i));
             //LogUtils.logInfo("phrases: " + phrases);
@@ -64,11 +63,14 @@ public class Analyse {
             }
         }
 
-        double sentiScore = 0.0;
+        double sentiScore = 0.0, positiveProb=0.0,negativeProb=0.0;
         if(sentimentProcess instanceof GoopSentimentProcess){
             sentiScore = Evaluate.statistics(StringUtil.listToString(seqs, "|"), 1);
         }else if(sentimentProcess instanceof CompSentimentProcess){
             sentiScore = Evaluate.statistics(StringUtil.listToString(seqs, "|"), 2);
+            Map<String, Double> prob = Evaluate.sentiProb(StringUtil.listToString(seqs, "|"));
+            positiveProb = prob.get("positiveProb");
+            negativeProb = prob.get("negativeProb");
         }
         String segedStr = StringUtil.listToString(seged, " ");
         String posedStr = StringUtil.listToString(posed, " ");
@@ -79,23 +81,25 @@ public class Analyse {
         resultMap.put("parsed", parsedStr);
         resultMap.put("fph", StringUtil.listToString(fph, " ,"));
         resultMap.put("seqs", StringUtil.listToString(seqs, "|"));
+        resultMap.put("positiveProb", String.valueOf(positiveProb));
+        resultMap.put("negativeProb", String.valueOf(negativeProb));
         resultMap.put("score", String.valueOf(sentiScore));
         //LogUtils.logInfo("part " + StringUtil.listToString(seqs, "|"));
-        //LogUtils.logInfo("sent " + sentiScore);
+        LogUtils.logInfo("positiveProb="+positiveProb+";negativeProb="+negativeProb+";score " + sentiScore);
         return resultMap;
     }
 
-    public static void parserFromFile(String inPath, String outPath) {
+    public static void parserFromFile(SentimentProcess sentimentProcess, String inPath, String outPath) {
         // sentence length :80 tokens
         try {
             int i = 1;
             LineIterator lines = FileUtils.lineIterator(new File(inPath), Charsets.UTF_8.toString());
             while (lines.hasNext()) {
                 String line = lines.next().trim();
-                Map<String, String> result = sentiFly(line);
+                Map<String, String> result = sentiFly(sentimentProcess, line);
                 FileUtils.writeStringToFile(new File(outPath),
-                        i+ ": " + result.get("score") + " ; " + result.get("seqs") + " ; " + result.get("fph")
-                                + "====" + line + "\n",
+                        i+ ": " + result.get("positiveProb") + " ; " +result.get("negativeProb") + " ; " +result.get("score")
+                                + " ; " + line + "====" + result.get("seqs") + " ; " + result.get("fph") + "\n",
                         Charsets.UTF_8, true);
                 i++;
 
@@ -106,12 +110,13 @@ public class Analyse {
     }
 
     public static void main(String args[]) {
-//        System.out.println(sentiFly("各方面都一般，只要期望值不太高就还可以。"));
-        //String words = "酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。";
+        SentimentProcess sentimentProcess = new CompSentimentProcess();
+//        System.out.println(sentiFly(sentimentProcess, "酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。"));
+                //String words = "酒店实在差，房间又小又脏，卫生间环境太差，整个酒店有点像马路边上的招待所。";
         //房间的设施还算过得去～但是我遇到的最差的酒店服务就是这家酒店了，特别是前台服务简直让人恶心
         //设施还将就,但服务是相当的不到位。休息了一个晚上我白天出去,中午回来的时候居然房间都没有整理。尽管我挂了要求整理房间的牌子.
-        parserFromFile("F:\\workspace\\data\\test\\posall.txt",
-                "F:\\workspace\\data\\test\\posall-comp-result-split.txt");
+        parserFromFile(sentimentProcess, "F:\\workspace\\data\\test\\posall.txt",
+                "F:\\workspace\\data\\test\\posall-comp-result-prob.txt");
     }
 
 }

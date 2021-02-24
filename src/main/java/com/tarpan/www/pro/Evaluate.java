@@ -3,9 +3,7 @@ package com.tarpan.www.pro;
 import com.tarpan.www.util.LogUtils;
 import com.tarpan.www.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * 计算得分
@@ -14,15 +12,51 @@ import java.util.List;
  */
 public class Evaluate {
     /**
+     * 情感倾向，正还是负
+     * 正  负
+     *
+     * @param sentence
+     * @return
+     */
+    public static Map<String, Double> sentiProb(String sentence) {
+        Map<String, Double> result = new HashMap<>(4);
+        double positiveProb = 0.0, negativeProb = 0.0;
+        sentence = sentence.trim();
+        if (StringUtil.isNullOrBlank(sentence)) {
+            result.put("positiveProb", positiveProb);
+            result.put("negativeProb", negativeProb);
+            return result;
+        }
+        String[] li = sentence.split("\\|");
+        for (String str : li) {
+            try {
+                if (str.startsWith("-")) {
+                    negativeProb += Double.parseDouble(str);
+                } else {
+                    positiveProb += Double.parseDouble(str);
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+        double sum = positiveProb + Math.abs(negativeProb);
+        positiveProb = positiveProb/sum;
+        negativeProb = 1 - positiveProb;
+        result.put("positiveProb", positiveProb);
+        result.put("negativeProb", negativeProb);
+        return result;
+    }
+
+    /**
      * 统计得分
      *
      * @param phraseNumberSeq
-     * @param status 1-goop使用，2-comp使用
+     * @param status          1-goop使用，2-comp使用
      * @return
      */
     public static double statistics(String phraseNumberSeq, Integer status) {
         double strength = 0.0;
-        if(status == 1) {
+        if (status == 1) {
             double strength1 = Evaluate.findSentiDropPoint(phraseNumberSeq);
             double strength2 = Evaluate.commonSenti(phraseNumberSeq);
             if (strength1 * strength2 > 0) {
@@ -38,7 +72,7 @@ public class Evaluate {
                     strength = strength2;
                 }
             }
-        }else if(status == 2){
+        } else if (status == 2) {
             strength = Evaluate.commonSenti(phraseNumberSeq);
         }
         strength = ((int) Math.round(strength * 100)) / 100.0;

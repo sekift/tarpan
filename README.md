@@ -1,9 +1,35 @@
 # 🎨 Tarpan
 European Wild Horse(Tarpan)，欧洲野马于1877年灭绝。 在这里是自主实现的中文细粒度情感分析程序，能够给出词语、句子、段落的具体得分。<br />
+  
+## 📦 更新
+2021/02/24 更新
+   1. 🆕 新版的情感得分程序基本完成，增加情感倾向值。
+   2. 🆕 更新情感词典。
+   
+2021/02/01 更新
+   1. ⚡ 优化代码，整改文件读取。
+   2. 🆕 增加stanford本地分词和依存关系程序，见：https://github.com/sekift/tarpan-nlp 。
+   3. 🆕 着手编码新版的情感得分程序。
 
-## 🤖 分词使用斯坦福CoreNLP
-相关项目：https://github.com/sekift/tarpan-nlp<br />
+2019/05/29 首发
+   1. 🤖 基本功能搭建，旧版情感得分程序完成。
+   2. 🤖 句子依存关系仅从网站处获得。
+
+## 🌰 分词使用斯坦福CoreNLP
+🔗 相关项目：https://github.com/sekift/tarpan-nlp<br />
+
+## 🤖 测试
+查看doc目录下的："ChnSentiCorp情感分析酒店评论"目录<br/>
+文件说明：<br/>
+1. negall.txt 标记为负面的文档，一行一条评论
+2. negall-goop-result.txt 旧版情感得分对负面文档的分析结果，格式为：行数|总得分|部分得分|情感词语|原句
+3. negall-comp-result.txt 新版情感得分对负面文档的分析结果，格式为：行数|正倾向|负倾向|总得分|原句|部分得分|情感词语
+4. posall.txt 标记为正面的文档，一行一条评论
+5. negall-goop-result.txt 旧版情感得分对正面文档的分析结果，格式为：行数|总得分|部分得分|情感词语|原句
+6. negall-comp-result.txt 新版情感得分对正面文档的分析结果，格式为：行数|正倾向|负倾向|总得分|原句|部分得分|情感词语
 
 ## 💻 应用
 现在用在歌词情感分析上，参考项目：https://github.com/sekift/quelili 。<br />
 
+## 🌈 缺点
+1. 无法识别反话，某些词识别不足，得分有所偏差。

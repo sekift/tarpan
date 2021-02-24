@@ -22,8 +22,8 @@ public class CompSentimentProcess implements SentimentProcess {
     private Map<String, Double> advxxx = LoadFile.getAdvxxx();
 
     public static void main(String[] args) {
-        String posedStr = "各#DT 方面#NN 都#AD 一般#VA ，#PU 只要#CS 期望值#NN 不#AD 太#AD 高#VA 就#AD 还#AD 可以#VV 。#PU, fph=3#都#AD#1.05&4#一般#VA#0.5";
-        String parsedStr = "root(ROOT-0, 一般-4)   det(方面-2, 各-1)   nsubj(一般-4, 方面-2)   advmod(一般-4, 都-3)   punct(一般-4, ，-5)   advmod(高-10, 只要-6)   nsubj(高-10, 期望值-7)   neg(高-10, 不-8)   advmod(高-10, 太-9)   dep(可以-13, 高-10)   advmod(可以-13, 就-11)   advmod(可以-13, 还-12)   dep(一般-4, 可以-13)   punct(一般-4, 。-14)";
+        String posedStr = "特别#AD 值得#VV 推荐#NN 的#DEC 是#VC 餐饮#NN 很#AD 好#VA ，#PU 不管#AD 是#VC 堂食#NN 还是#CC 送餐#NN ，#PU 味道#NN 不错#VA ，#PU 价格#NN 也#AD 不#AD 贵#VA 。#PU";
+        String parsedStr = "root(ROOT-0, 好-8)   advmod(值得-2, 特别-1)   nsubj(好-8, 值得-2)   dobj(值得-2, 推荐-3)   mark(值得-2, 的-4)   cop(好-8, 是-5)   nsubj(好-8, 餐饮-6)   advmod(好-8, 很-7)   punct(好-8, ，-9)   advmod(送餐-14, 不管-10)   cop(送餐-14, 是-11)   conj(送餐-14, 堂食-12)   cc(送餐-14, 还是-13)   conj(好-8, 送餐-14)   punct(好-8, ，-15)   nsubj(不错-17, 味道-16)   conj(好-8, 不错-17)   punct(好-8, ，-18)   nsubj(贵-22, 价格-19)   advmod(贵-22, 也-20)   neg(贵-22, 不-21)   conj(好-8, 贵-22)   punct(好-8, 。-23)";
         SentimentProcess process = new CompSentimentProcess();
         List<String> list = process.findPhrase(posedStr, parsedStr);
         process.filterPhrase(list);
@@ -76,10 +76,12 @@ public class CompSentimentProcess implements SentimentProcess {
         // 1 将得分0.0的过滤掉
         List<String> filterZeroList = filterZeroPart(phrases);
         System.out.println("filterZeroList= " + filterZeroList);
-        // 2 将部分只有一个词的过滤掉，词性包括：DT、PN
-        List<String> filterSpeechList = filterSpeechPart(filterZeroList);
+        // 2 过滤无意义的词
+        List<String> filterSpeechList = filterSpeechP(filterZeroList);
         //System.out.println("filterSpeechList= " + filterSpeechList);
-        // 3 长句拆解成短句
+        // 3 将部分只有一个词的过滤掉，词性包括：DT、P、PN、PU、M
+        filterSpeechList = filterSpeechPart(filterSpeechList);
+        // 4 长句拆解成短句
         List<String> splitAdList = splitAdPart(filterSpeechList);
         System.out.println("splitAdList= " + splitAdList);
 
@@ -157,15 +159,18 @@ public class CompSentimentProcess implements SentimentProcess {
             StringBuilder sb = new StringBuilder();
             if (array.length >= 4) {
                 for (int i = 0; i < array.length; i++) {
-                    if (i != 0 && !array[i].contains("#AD")) {
-                        sb.append(array[i]).append(Constants.TWO_WORD_SEP).append(Constants.DEPE_SEP);
+                    if (i != 0 && array[i].contains("#AD") && !array[i-1].contains("#AD")) {
+                        if(i>1){
+                            sb.append(Constants.DEPE_SEP).append(array[i]).append(Constants.TWO_WORD_SEP);
+                        }else{
+                            sb.append(array[i]).append(Constants.TWO_WORD_SEP);
+                        }
                     } else {
                         sb.append(array[i]).append(Constants.TWO_WORD_SEP);
                     }
                     sb.subSequence(0, sb.length() -1);
                 }
-                String str = sb.toString().substring(0, sb.length() - 1);
-                String[] strArray = str.split(Constants.DEPE_SEP);
+                String[] strArray = sb.toString().split(Constants.DEPE_SEP);
                 for (int j = 0; j < strArray.length; j++) {
                      resultList.add(strArray[j].substring(0, strArray[j].length() - 1));
                 }
@@ -177,7 +182,7 @@ public class CompSentimentProcess implements SentimentProcess {
     }
 
     /**
-     * 将部分只有一个词的过滤掉，词性包括：AD、DT
+     * 将部分只有一个词的过滤掉，词性包括：DT、P、PN、PU
      *
      * @param phrases
      * @return
@@ -187,9 +192,32 @@ public class CompSentimentProcess implements SentimentProcess {
         for (String value : phrases) {
             String[] valueArray = value.split(Constants.TWO_WORD_SEP);
             boolean flag = valueArray.length == 1 &&
-                    (valueArray[0].contains("#DT") || valueArray[0].contains("#PN"));
+                    (valueArray[0].contains("#DT") || valueArray[0].contains("#P")|| valueArray[0].contains("#M#"));
             if (!flag) {
                 resultList.add(value);
+            }
+        }
+        return resultList;
+    }
+
+    /**
+     * 将词性为P的介词，为M的量词过滤掉
+     *
+     * @param phrases
+     * @return
+     */
+    private List<String> filterSpeechP(List<String> phrases) {
+        List<String> resultList = new ArrayList<>();
+        for (String value : phrases) {
+            String[] valueArray = value.split(Constants.TWO_WORD_SEP);
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i<valueArray.length;i++){
+                if(!valueArray[i].contains("#P#") && !valueArray[i].contains("#M#")){
+                    sb.append(valueArray[i]).append(Constants.TWO_WORD_SEP);
+                }
+            }
+            if(StringUtils.isNotEmpty(sb)) {
+                resultList.add(sb.substring(0, sb.length() - 1));
             }
         }
         return resultList;
