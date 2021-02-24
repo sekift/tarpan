@@ -31,16 +31,19 @@ public class Constants {
 
 	/** 分割符号*/
 	public static final String EQUAL_SEP = "====";
-	//依存关系分割符号
+	/**依存关系分割符号*/
 	public static final String DEPE_SEP = "%";
-	//依存关系两词语间分割符号
+	/**依存关系两词语间分割符号*/
 	public static final String TWO_WORD_SEP = "&";
-	//词语与词性分割符号
+	/**词语与词性分割符号*/
 	public static final String WORD_SEG_SEP = "#";
-	
-	// shift 情感的分值
+	/**计算得分的分割符号*/
+	public static final String SCORE_SEP = "|";
+
+
+	/** shift 情感的分值*/
 	public static final double SHIFT_VALUE = 4.0;
-	// 不太 情感的分值
+	/** 不太 情感的分值*/
 	public static final double BUTAI_VALUE = 5.0;
 	
 	/**

@@ -3,7 +3,6 @@ package com.tarpan.www.process.impl;
 import com.tarpan.www.Constants;
 import com.tarpan.www.pre.LoadFile;
 import com.tarpan.www.process.SentimentProcess;
-import com.tarpan.www.util.LogUtils;
 import com.tarpan.www.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,8 +22,8 @@ public class CompSentimentProcess implements SentimentProcess {
     private Map<String, Double> advxxx = LoadFile.getAdvxxx();
 
     public static void main(String[] args) {
-        String posedStr = "酒店#NN 实在#AD 差#VA ，#PU 房间#NN 又#AD 小#VA 又#AD 脏#VA ，#PU 卫生间#NN 环境#NN 太#AD 差#VA ，#PU 整#DT 个#M 酒店#NN 有点#AD 像#VV 马路#NN 边上#LC 的#DEG 招待所#NN 。#PU";
-        String parsedStr = "root(ROOT-0, 差-3)   nsubj(差-3, 酒店-1)   advmod(差-3, 实在-2)   punct(差-3, ，-4)   nsubj(小-7, 房间-5)   advmod(小-7, 又-6)   conj(差-3, 小-7)   advmod(脏-9, 又-8)   conj(小-7, 脏-9)   punct(差-3, ，-10)   compound:nn(环境-12, 卫生间-11)   nsubj(差-14, 环境-12)   advmod(差-14, 太-13)   conj(差-3, 差-14)   punct(差-3, ，-15)   det(酒店-18, 整-16)   mark:clf(整-16, 个-17)   nsubj(像-20, 酒店-18)   advmod(像-20, 有点-19)   conj(差-3, 像-20)   nmod(招待所-24, 马路-21)   case(马路-21, 边上-22)   case(马路-21, 的-23)   dobj(像-20, 招待所-24)   punct(差-3, 。-25)";
+        String posedStr = "各#DT 方面#NN 都#AD 一般#VA ，#PU 只要#CS 期望值#NN 不#AD 太#AD 高#VA 就#AD 还#AD 可以#VV 。#PU, fph=3#都#AD#1.05&4#一般#VA#0.5";
+        String parsedStr = "root(ROOT-0, 一般-4)   det(方面-2, 各-1)   nsubj(一般-4, 方面-2)   advmod(一般-4, 都-3)   punct(一般-4, ，-5)   advmod(高-10, 只要-6)   nsubj(高-10, 期望值-7)   neg(高-10, 不-8)   advmod(高-10, 太-9)   dep(可以-13, 高-10)   advmod(可以-13, 就-11)   advmod(可以-13, 还-12)   dep(一般-4, 可以-13)   punct(一般-4, 。-14)";
         SentimentProcess process = new CompSentimentProcess();
         List<String> list = process.findPhrase(posedStr, parsedStr);
         process.filterPhrase(list);
@@ -77,42 +76,101 @@ public class CompSentimentProcess implements SentimentProcess {
         // 1 将得分0.0的过滤掉
         List<String> filterZeroList = filterZeroPart(phrases);
         System.out.println("filterZeroList= " + filterZeroList);
-        // 2 将部分只有一个词的过滤掉，词性包括：DT
+        // 2 将部分只有一个词的过滤掉，词性包括：DT、PN
         List<String> filterSpeechList = filterSpeechPart(filterZeroList);
-        System.out.println("filterSpeechList= " + filterSpeechList);
-        // 3 将AD向后合并，索引差需要在6以内
-        List<String> mergeAdList = mergeAdPart(filterSpeechList);
-        System.out.println("mergeAdList= " + mergeAdList);
-        return filterSpeechList;
-    }
+        //System.out.println("filterSpeechList= " + filterSpeechList);
+        // 3 长句拆解成短句
+        List<String> splitAdList = splitAdPart(filterSpeechList);
+        System.out.println("splitAdList= " + splitAdList);
 
-    @Override
-    public String calAll(List<String> finalPh) {
-        return null;
+        return splitAdList;
     }
 
     /**
-     * 将单个AD词性的合并到后一项去，索引差需在一定范围内
+     * 计算分部得分
+     *
+     * @param finalPh
+     * @return String "-3.3|-2.75|-3.3|-3.9"
+     */
+    @Override
+    public String calAll(List<String> finalPh) {
+        // 输入：[2#实在#AD#1.1&3#差#VA#-3.0, 6#又#AD#1.1&7#小#VA#-2.5&8#又#AD#1.1&9#脏#VA#-3.0, 13#太#AD#1.3&14#差#VA#-3.0, 19#有点#AD#0.3]
+        StringBuilder sb = new StringBuilder();
+        for (String value : finalPh) {
+            String[] array = value.split(Constants.TWO_WORD_SEP);
+            if (array.length == 1) {
+                double firstPoint = Double.parseDouble(array[0].split(Constants.WORD_SEG_SEP)[3]);
+                if (array[0].contains("#AD") || array[0].contains("#VE")) {
+                    sb.append(((int) ((0.4 * firstPoint) * 100)) / 100.0).append(Constants.SCORE_SEP);
+                } else {
+                    sb.append(firstPoint).append(Constants.SCORE_SEP);
+                }
+            } else if (array.length > 1) {
+                Double[] pointArray = new Double[array.length];
+                for (int i = 0; i < array.length; i++) {
+                    pointArray[i] = Double.parseDouble(array[i].split(Constants.WORD_SEG_SEP)[3]);
+                }
+                List<Integer> adList = new ArrayList<>();
+                List<Integer> notAdList = new ArrayList<>();
+                for (int i = 0; i < array.length; i++) {
+                    if (array[i].contains("#AD") || array[i].contains("#VE")) {
+                        adList.add(i);
+                    } else {
+                        notAdList.add(i);
+                    }
+                }
+                double multiPoint = 1.0, sumPoint = 0.0;
+                if (adList.isEmpty()) {
+                    for (Integer in : notAdList) {
+                        sumPoint += pointArray[in];
+                    }
+                    sb.append(((int) (sumPoint * 100)) / 100.0).append(Constants.SCORE_SEP);
+                } else if (notAdList.isEmpty()) {
+                    for (Integer in : adList) {
+                        multiPoint *= pointArray[in];
+                    }
+                    sb.append(((int) (0.4 * multiPoint * 100)) / 100.0).append(Constants.SCORE_SEP);
+                } else {
+                    for (Integer in : adList) {
+                        multiPoint *= pointArray[in];
+                    }
+                    for (Integer in : notAdList) {
+                        sumPoint += pointArray[in];
+                    }
+                    sb.append(((int) ((multiPoint * sumPoint) * 100)) / 100.0).append(Constants.SCORE_SEP);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * #AD#XX#AD#XX，拆成#AD#XX，#AD#XX
      *
      * @param phrases
      * @return
      */
-    private List<String> mergeAdPart(List<String> phrases) {
+    private List<String> splitAdPart(List<String> phrases) {
         List<String> resultList = new ArrayList<>();
-        for (int i = 0; i < phrases.size() - 1; i++) {
-            String preValue = phrases.get(i);
-            String proValue = phrases.get(i + 1);
-            String[] valueArray = preValue.split(Constants.TWO_WORD_SEP);
-            boolean flag = valueArray.length == 1 &&
-                    (valueArray[0].contains("#AD"));
-            if (flag) {
-                Integer preInt = Integer.parseInt(preValue.split(Constants.WORD_SEG_SEP)[0]);
-                Integer proInt = Integer.parseInt(proValue.split(Constants.WORD_SEG_SEP)[0]);
-                if (proInt - preInt <= 6) {
-                    resultList.add(preValue + Constants.TWO_WORD_SEP + proValue);
+        for (String value : phrases) {
+            String[] array = value.split(Constants.TWO_WORD_SEP);
+            StringBuilder sb = new StringBuilder();
+            if (array.length >= 4) {
+                for (int i = 0; i < array.length; i++) {
+                    if (i != 0 && !array[i].contains("#AD")) {
+                        sb.append(array[i]).append(Constants.TWO_WORD_SEP).append(Constants.DEPE_SEP);
+                    } else {
+                        sb.append(array[i]).append(Constants.TWO_WORD_SEP);
+                    }
+                    sb.subSequence(0, sb.length() -1);
+                }
+                String str = sb.toString().substring(0, sb.length() - 1);
+                String[] strArray = str.split(Constants.DEPE_SEP);
+                for (int j = 0; j < strArray.length; j++) {
+                     resultList.add(strArray[j].substring(0, strArray[j].length() - 1));
                 }
             } else {
-                resultList.add(preValue);
+                resultList.add(value);
             }
         }
         return resultList;
@@ -129,7 +187,7 @@ public class CompSentimentProcess implements SentimentProcess {
         for (String value : phrases) {
             String[] valueArray = value.split(Constants.TWO_WORD_SEP);
             boolean flag = valueArray.length == 1 &&
-                    (valueArray[0].contains("#DT"));
+                    (valueArray[0].contains("#DT") || valueArray[0].contains("#PN"));
             if (!flag) {
                 resultList.add(value);
             }

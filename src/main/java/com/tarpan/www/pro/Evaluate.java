@@ -17,25 +17,31 @@ public class Evaluate {
      * 统计得分
      *
      * @param phraseNumberSeq
+     * @param status 1-goop使用，2-comp使用
      * @return
      */
-    public static double statistics(String phraseNumberSeq) {
-        double strength;
-        double strength1 = Evaluate.findSentiDropPoint(phraseNumberSeq);
-        double strength2 = Evaluate.commonSenti(phraseNumberSeq);
-        if (strength1 * strength2 > 0) {
-            strength = strength2;
-        } else if (strength1 == 0) {
-            strength = strength2;
-        } else if (strength2 == 0) {
-            strength = strength1;
-        } else {
-            if (strength1 > 0 && strength2 < 0) {
+    public static double statistics(String phraseNumberSeq, Integer status) {
+        double strength = 0.0;
+        if(status == 1) {
+            double strength1 = Evaluate.findSentiDropPoint(phraseNumberSeq);
+            double strength2 = Evaluate.commonSenti(phraseNumberSeq);
+            if (strength1 * strength2 > 0) {
+                strength = strength2;
+            } else if (strength1 == 0) {
+                strength = strength2;
+            } else if (strength2 == 0) {
                 strength = strength1;
             } else {
-                strength = strength2;
+                if (strength1 > 0 && strength2 < 0) {
+                    strength = strength1;
+                } else {
+                    strength = strength2;
+                }
             }
+        }else if(status == 2){
+            strength = Evaluate.commonSenti(phraseNumberSeq);
         }
+        strength = ((int) Math.round(strength * 100)) / 100.0;
         return strength;
     }
 
@@ -155,6 +161,6 @@ public class Evaluate {
         System.out.println(findSentiDropPoint("s|1.8|-5.85|0|s|1.0|0"));
         System.out.println(commonSenti("s|1.8|-5.85|0|s|1.0|0"));
         String str = "s|1.8|-5.85|0|s|1.0|0";
-        System.out.println(statistics(str));
+        System.out.println(statistics(str, 1));
     }
 }
