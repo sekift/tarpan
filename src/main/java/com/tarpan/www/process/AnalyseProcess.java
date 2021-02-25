@@ -46,14 +46,15 @@ public class AnalyseProcess {
         }
         List<String> seqs = new ArrayList<>();
         // final phrases
-        List<String> fph = new ArrayList<>();
+        List<String> finalPhrases = new ArrayList<>();
+        List<String> sentiWord = new ArrayList<>();
         List<String> seged = nlp.get("seged");
         List<String> posed = nlp.get("posed");
         List<String> parsed = nlp.get("parsed");
         for (int i = 0; i < seged.size(); i++) {
             List<String> phrases = sentimentProcess.findPhrase(posed.get(i), parsed.get(i));
             List<String> finalPh = sentimentProcess.filterPhrase(phrases);
-            fph.add(StringUtil.listToString(finalPh, " ,"));
+            finalPhrases.add(StringUtil.listToString(finalPh, " ,"));
             String phraseNumberSeqs = sentimentProcess.calAll(finalPh);
             if (StringUtils.isNotEmpty(phraseNumberSeqs)) {
                 seqs.add(phraseNumberSeqs);
@@ -72,11 +73,14 @@ public class AnalyseProcess {
         String segedStr = StringUtil.listToString(seged, " ");
         String posedStr = StringUtil.listToString(posed, " ");
         String parsedStr = StringUtil.listToString(parsed, " ");
+
+        sentiWord = StringUtil.getWord(finalPhrases);
         resultMap.put("input", line);
         resultMap.put("seged", segedStr);
         resultMap.put("posed", posedStr);
         resultMap.put("parsed", parsedStr);
-        resultMap.put("fph", StringUtil.listToString(fph, " ,"));
+        resultMap.put("finalPhrases", StringUtil.listToString(finalPhrases, " ,"));
+        resultMap.put("sentiWord", StringUtil.listToString(sentiWord, " ,"));
         resultMap.put("seqs", StringUtil.listToString(seqs, "|"));
         resultMap.put("positiveProb", String.valueOf(positiveProb));
         resultMap.put("negativeProb", String.valueOf(negativeProb));

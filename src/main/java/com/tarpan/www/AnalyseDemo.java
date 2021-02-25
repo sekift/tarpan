@@ -28,6 +28,16 @@ import java.util.Map;
  */
 public class AnalyseDemo {
 
+    public static void main(String args[]) {
+        SentimentProcess sentimentProcess = new CompSentimentProcess();
+        // 单句分析
+        System.out.println(AnalyseProcess.sentiFly(sentimentProcess, 1,
+                "行政豪华间有点偏贵，房间面积小了！服务总体还可以，就是房间清扫人员不太注意礼貌，有时候刚敲门马上就擅自进来！酒店位置不错！"));
+        // 文件分析
+//        parserFromFile(sentimentProcess, 1,"F:\\workspace\\data\\test\\posall-parti.txt",
+//                "F:\\workspace\\data\\test\\posall-comp-result-vv.txt");
+    }
+
     /**
      * 文件处理
      *
@@ -52,15 +62,6 @@ public class AnalyseDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String args[]) {
-        SentimentProcess sentimentProcess = new CompSentimentProcess();
-        // 单句分析
-        System.out.println(AnalyseProcess.sentiFly(sentimentProcess, 1, "帮JJ定的,好像不怎么样哦,水好像差点意思"));
-        // 文件分析
-//        parserFromFile(sentimentProcess, 1,"F:\\workspace\\data\\test\\posall-parti.txt",
-//                "F:\\workspace\\data\\test\\posall-comp-result-vv.txt");
     }
 
 }
