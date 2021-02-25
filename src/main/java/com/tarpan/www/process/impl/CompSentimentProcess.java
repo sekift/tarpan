@@ -4,8 +4,12 @@ import com.tarpan.www.Constants;
 import com.tarpan.www.pre.LoadFile;
 import com.tarpan.www.process.SentimentProcess;
 import com.tarpan.www.util.StringUtil;
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -75,7 +79,7 @@ public class CompSentimentProcess implements SentimentProcess {
     public List<String> filterPhrase(List<String> phrases) {
         // 1 将得分0.0的过滤掉
         List<String> filterZeroList = filterZeroPart(phrases);
-        System.out.println("filterZeroList= " + filterZeroList);
+        //System.out.println("filterZeroList= " + filterZeroList);
         // 2 过滤无意义的词
         List<String> filterSpeechList = filterSpeechP(filterZeroList);
         //System.out.println("filterSpeechList= " + filterSpeechList);
@@ -83,7 +87,7 @@ public class CompSentimentProcess implements SentimentProcess {
         filterSpeechList = filterSpeechPart(filterSpeechList);
         // 4 长句拆解成短句
         List<String> splitAdList = splitAdPart(filterSpeechList);
-        System.out.println("splitAdList= " + splitAdList);
+        //System.out.println("splitAdList= " + splitAdList);
 
         return splitAdList;
     }
@@ -115,7 +119,7 @@ public class CompSentimentProcess implements SentimentProcess {
                 List<Integer> adList = new ArrayList<>();
                 List<Integer> notAdList = new ArrayList<>();
                 for (int i = 0; i < array.length; i++) {
-                    if (array[i].contains("#AD") || array[i].contains("#VE")) {
+                    if (array[i].contains("#AD") || array[i].contains("#VE") || array[i].contains("#VV")) {
                         adList.add(i);
                     } else {
                         notAdList.add(i);

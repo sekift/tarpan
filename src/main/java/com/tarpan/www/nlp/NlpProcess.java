@@ -2,12 +2,17 @@ package com.tarpan.www.nlp;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPObject;
+import com.tarpan.www.pre.PreProcess;
 import com.tarpan.www.util.HttpUtil;
 import com.tarpan.www.util.LogUtils;
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +28,36 @@ import java.util.Map;
 public class NlpProcess {
     private static final String PARSER_URL = "http://nlp.stanford.edu:8080/parser/index.jsp";
     private static final String NATIVE_URL = "http://10.0.2.155:8087/nlp/parser";
+
+    /**
+     * 分词落磁盘
+     */
+    public static void parseToFile(String inPath, String outPath){
+        try {
+            int i = 1;
+            LineIterator lines = FileUtils.lineIterator(new File(inPath), Charsets.UTF_8.toString());
+            while (lines.hasNext()) {
+                String line = lines.next().trim();
+                line = PreProcess.process(line);
+                // 自然语言处理，1-native，2-web
+                Map<String, List<String>> nlp = NlpProcess.parser(line, 1);
+                FileUtils.writeStringToFile(new File(outPath),
+                        JSONObject.toJSONString(nlp) + "\n",
+                        Charsets.UTF_8, true);
+                i++;
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void main(String args[]) {
+//        System.out.println(parseFromNative("酒店实在差 房间又小又脏.卫生间环境太差 整个酒店有点像马路边上的招待所 "));
+        parseToFile( "F:\\workspace\\data\\test\\negall.txt",
+                "F:\\workspace\\data\\test\\negall-parti.txt");
+    }
 
     /**
      * 分词和句法依存关系的示例
@@ -86,10 +121,6 @@ public class NlpProcess {
             e.printStackTrace();
         }
         return resultMap;
-    }
-
-    public static void main(String args[]) {
-        System.out.println(parseFromNative("酒店实在差 房间又小又脏.卫生间环境太差 整个酒店有点像马路边上的招待所 "));
     }
 
     /**
