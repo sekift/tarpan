@@ -1,8 +1,14 @@
 package com.tarpan.www.pro;
 
+import com.tarpan.www.process.AnalyseProcess;
+import com.tarpan.www.process.SentimentProcess;
 import com.tarpan.www.util.LogUtils;
 import com.tarpan.www.util.StringUtil;
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -11,6 +17,29 @@ import java.util.*;
  * @author sekift
  */
 public class Evaluate {
+    public static void main(String args[]) {
+        parserFromFile("F:\\workspace\\data\\test\\posall-goop-score.txt",
+                "F:\\workspace\\data\\test\\posall-goop-score.txt-result.txt");
+    }
+
+    public static void parserFromFile(String inPath, String outPath) {
+        try {
+            int i = 1;
+            LineIterator lines = FileUtils.lineIterator(new File(inPath), Charsets.UTF_8.toString());
+            while (lines.hasNext()) {
+                String line = lines.next().trim();
+                Map<String, Double> result = sentiProb(line);
+                FileUtils.writeStringToFile(new File(outPath),
+                        i + " ; " + result.get("positiveProb") + " ; " + result.get("negativeProb") + "\n",
+                        Charsets.UTF_8, true);
+                i++;
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 情感倾向，正还是负
      * 正  负
@@ -40,6 +69,12 @@ public class Evaluate {
             }
         }
         double sum = positiveProb + Math.abs(negativeProb);
+        if (sum - 0.0 < 0.001) {
+            result.put("positiveProb", 0.5);
+            result.put("negativeProb", 0.5);
+            return result;
+        }
+
         positiveProb = positiveProb/sum;
         negativeProb = 1 - positiveProb;
         result.put("positiveProb", positiveProb);
@@ -188,13 +223,5 @@ public class Evaluate {
             }
         }
         return sum;
-    }
-
-    public static void main(String args[]) {
-        System.out.println(findSentiDropPoint("-1.0"));
-        System.out.println(findSentiDropPoint("s|1.8|-5.85|0|s|1.0|0"));
-        System.out.println(commonSenti("s|1.8|-5.85|0|s|1.0|0"));
-        String str = "s|1.8|-5.85|0|s|1.0|0";
-        System.out.println(statistics(str, 1));
     }
 }
