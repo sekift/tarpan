@@ -18,7 +18,7 @@
 	    <logback.version>1.2.3</logback.version>
 		<beanutils.version>1.9.4</beanutils.version>
 	    <codec.version>1.11</codec.version>
-		<io.version>2.4</io.version>
+		<io.version>2.7</io.version>
 		<lang.version>2.4</lang.version>
 		<suffixtree.version>1.0.2</suffixtree.version>
 		<jsoup.version>1.11.2</jsoup.version>
