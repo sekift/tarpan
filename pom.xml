@@ -24,7 +24,7 @@
 		<jsoup.version>1.11.2</jsoup.version>
 	    <junit.version>4.13.1</junit.version>
 	    <corenlp.verison>4.2.0</corenlp.verison>
-		<fastjson.version>1.2.73</fastjson.version>
+		<fastjson.version>1.2.83</fastjson.version>
 	</properties>
 
 	<dependencies>
