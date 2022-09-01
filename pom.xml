@@ -21,7 +21,7 @@
 		<io.version>2.4</io.version>
 		<lang.version>2.4</lang.version>
 		<suffixtree.version>1.0.2</suffixtree.version>
-		<jsoup.version>1.11.2</jsoup.version>
+		<jsoup.version>1.15.3</jsoup.version>
 	    <junit.version>4.13.1</junit.version>
 	    <corenlp.verison>4.2.0</corenlp.verison>
 		<fastjson.version>1.2.73</fastjson.version>
